@@ -1,0 +1,6 @@
+Bloque,Significado,Tipo,Ejemplo
+1-3,Categoría,Texto,PAN (Pantalla)
+4-6,Marca,Texto,HUA (Huawei)
+7-8,Estado,Num,01 (Nuevo)
+9-11,Condición,Texto,OEM (Original)
+12-14,ID Modelo,Num,042 (Mate 10)
