@@ -9,7 +9,7 @@ export default async function renderBrands(container) {
     <div class="add-form">
       <input type="text" id="inputCodigo" placeholder="Código (3 chars)" maxlength="3" style="max-width:100px;text-transform:uppercase;font-family:var(--font-mono)">
       <input type="text" id="inputNombre" placeholder="Nombre de marca">
-      <button class="btn btn--primary" id="btnAddBrand" style="padding:var(--sp-3) var(--sp-4)">+</button>
+      <button class="btn btn--primary" id="btnAddBrand" style="padding:var(--sp-3) var(--sp-4)">Añadir</button>
     </div>
 
     <div id="brandList" class="brand-list"></div>
@@ -83,11 +83,19 @@ async function renderBrandList(container) {
     allBrands.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     for (const brand of allBrands) {
-        const item = createElement('div', { className: 'brand-item' }, [
+        const item = createElement('div', {
+            className: 'brand-item',
+            style: 'cursor:pointer'
+        }, [
             createElement('span', { className: 'brand-item__code', textContent: brand.codigo }),
             createElement('span', { className: 'brand-item__name', textContent: brand.nombre }),
             createElement('span', { className: 'brand-item__count', textContent: `${brand.count} prod.` })
         ]);
+
+        item.addEventListener('click', () => {
+            window.location.hash = `/marcas/${brand.codigo}/modelos`;
+        });
+
         listEl.appendChild(item);
     }
 }

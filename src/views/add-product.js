@@ -14,7 +14,7 @@ export default async function renderAddProduct(container) {
   container.innerHTML = `
     <h2 class="section-title">Nuevo Producto</h2>
 
-    <div class="sku-preview" id="skuPreview">_ _ _ _ _ _ _ _ _ _ _ _ _ _</div>
+    <div class="sku-preview" id="skuPreview">--------------</div>
 
     <div class="form-group">
       <label>Categoría</label>

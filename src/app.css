@@ -364,6 +364,61 @@ textarea {
   font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--text-primary);
+  line-height: 1;
+}
+
+/* ── Category Grid ─────────────────────────────────── */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--sp-4) var(--sp-2);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  user-select: none;
+  min-height: 80px;
+}
+
+.category-card:active {
+  transform: scale(0.95);
+}
+
+.category-card.active {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+}
+
+.category-card__name {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.category-card.active .category-card__name {
+  color: var(--accent);
+}
+
+.category-card__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .scan-result__actions {
@@ -604,13 +659,32 @@ textarea {
   display: flex;
   gap: var(--sp-2);
   overflow-x: auto;
-  padding-bottom: var(--sp-3);
+  padding: 4px var(--sp-4) var(--sp-2);
+  margin: 0 calc(var(--sp-4) * -1) var(--sp-2);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* UI/UX: Asegurar que no wrap y que use todo el ancho */
+  width: calc(100% + (var(--sp-4) * 2));
 }
 
 .filter-chips::-webkit-scrollbar {
-  display: none;
+  height: 3px;
+}
+
+.filter-chips::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.filter-chips:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (hover: hover) {
+  .filter-chips:hover::-webkit-scrollbar-thumb {
+    background: var(--accent);
+  }
 }
 
 .chip {
@@ -690,6 +764,9 @@ select {
   border: 2px dashed rgba(255, 255, 255, 0.1);
   color: var(--accent);
   letter-spacing: 0.15em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-bottom: var(--sp-4);
 }
 
@@ -1088,4 +1165,90 @@ select {
 
 .back-btn:active {
   color: var(--accent);
+}
+
+/* ── Modal & Overlays ──────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--duration) var(--ease-out);
+}
+
+.modal-overlay--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 360px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  transform: translateY(20px) scale(0.95);
+  transition: all var(--duration) var(--ease-out);
+}
+
+.modal-overlay--visible .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.modal-body {
+  padding: var(--sp-6);
+}
+
+.modal-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  margin-bottom: var(--sp-3);
+  color: var(--accent);
+}
+
+.modal-text {
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.modal-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.modal-btn {
+  height: 44px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.modal-btn--confirm {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+.modal-btn--cancel {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.modal-btn:active {
+  transform: scale(0.96);
 }

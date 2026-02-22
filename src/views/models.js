@@ -1,5 +1,5 @@
 import db from '../data/db.js';
-import { createElement, showToast } from '../utils/dom.js';
+import { createElement, showToast, showCustomModal } from '../utils/dom.js';
 
 export default async function renderModels(container, params) {
     const { codigo: marcaCodigo } = params;
@@ -159,8 +159,16 @@ async function renderModelList(container, marcaCodigo, filter = '') {
                 innerHTML: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
                 onclick: async (e) => {
                     e.stopPropagation();
-                    if (confirm(`¿Eliminar el modelo ${model.nombre}?`)) {
+                    const confirmed = await showCustomModal({
+                        title: 'Eliminar Modelo',
+                        message: `¿Estás seguro de que deseas eliminar el modelo ${model.nombre}? Esta acción no se puede deshacer.`,
+                        confirmText: 'Eliminar',
+                        cancelText: 'Volver'
+                    });
+
+                    if (confirmed) {
                         await db.modelos.delete(model.id);
+                        showToast(`Modelo ${model.nombre} eliminado`, 'info');
                         renderModelList(container, marcaCodigo, filter);
                     }
                 }

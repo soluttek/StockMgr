@@ -12,6 +12,7 @@ import renderInventoryList from './views/inventory-list.js';
 import renderProductDetail from './views/product-detail.js';
 import renderAddProduct from './views/add-product.js';
 import renderBrands from './views/brands.js';
+import renderModels from './views/models.js';
 
 /**
  * Punto de entrada principal para inicializar la aplicación.
@@ -22,11 +23,12 @@ async function initializeApplication() {
 
     const viewContainer = document.getElementById('viewContainer');
 
-    // Registro de rutas estáticas
+    // Registro de rutas estáticas y dinámicas
     registerRoute('/', (container) => renderDashboard(container));
     registerRoute('/inventario', (container) => renderInventoryList(container));
     registerRoute('/agregar', (container) => renderAddProduct(container));
     registerRoute('/marcas', (container) => renderBrands(container));
+    registerRoute('/marcas/:codigo/modelos', (container, params) => renderModels(container, params));
 
     initRouter(viewContainer);
 

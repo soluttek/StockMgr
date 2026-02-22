@@ -2,11 +2,14 @@ import db from '../data/db.js';
 import { getStockLevel } from '../modules/alerts.js';
 import categoriasData from '../data/categorias.json';
 import marcasData from '../data/marcas.json';
-import { createElement } from '../utils/dom.js';
+import { createElement, setupDragScroll } from '../utils/dom.js';
 
 let currentFilter = { categoria: '', marca: '', search: '' };
 
 export default async function renderInventoryList(container) {
+    // Resetear filtros al entrar para evitar estados "fantasma"
+    currentFilter = { categoria: '', marca: '', search: '' };
+
     container.innerHTML = `
     <div class="search-bar">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,6 +60,11 @@ export default async function renderInventoryList(container) {
     }
 
     const searchInput = container.querySelector('#searchInput');
+
+    // Habilitar arrastre con ratón (Desktop UX)
+    setupDragScroll(catContainer);
+    setupDragScroll(brandContainer);
+
     let debounce;
     searchInput.addEventListener('input', (e) => {
         clearTimeout(debounce);
