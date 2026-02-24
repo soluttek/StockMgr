@@ -10,7 +10,7 @@ export function generateSKU({ categoria, marca, estado, condicion, modeloId }) {
     if (!marca || marca.length !== 3) throw new Error(`Marca inválida: ${marca}`);
     if (!estado || estado.length !== 2) throw new Error(`Estado inválido: ${estado}`);
     if (!condicion || condicion.length !== 3) throw new Error(`Condición inválida: ${condicion}`);
-    if (!modeloId || modeloId.length !== 3) throw new Error(`ID Modelo inválido: ${modeloId}`);
+    if (!modeloId || modeloId.length !== 4) throw new Error(`ID Modelo inválido: ${modeloId} (se esperan 4 dígitos)`);
 
     if (!categoriasData[categoria]) throw new Error(`Categoría no existe en diccionario: ${categoria}`);
     if (!marcasData[marca]) throw new Error(`Marca no existe en diccionario: ${marca}`);
@@ -19,13 +19,13 @@ export function generateSKU({ categoria, marca, estado, condicion, modeloId }) {
 
     const sku = `${categoria}${marca}${estado}${condicion}${modeloId}`;
 
-    if (sku.length !== 14) throw new Error(`SKU generado con longitud incorrecta: ${sku.length} (esperado: 14)`);
+    if (sku.length !== 15) throw new Error(`SKU generado con longitud incorrecta: ${sku.length} (esperado: 15)`);
 
     return sku;
 }
 
 export function parseSKU(sku) {
-    if (!sku || sku.length !== 14) return null;
+    if (!sku || sku.length !== 15) return null;
     return {
         categoria: sku.substring(0, 3),
         categoriaNombre: categoriasData[sku.substring(0, 3)] || 'Desconocida',
@@ -35,7 +35,7 @@ export function parseSKU(sku) {
         estadoNombre: VALID_ESTADOS[sku.substring(6, 8)] || 'Desconocido',
         condicion: sku.substring(8, 11),
         condicionNombre: VALID_CONDICIONES[sku.substring(8, 11)] || 'Desconocida',
-        modeloId: sku.substring(11, 14)
+        modeloId: sku.substring(11, 15)
     };
 }
 

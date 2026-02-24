@@ -1,13 +1,13 @@
 import db, { registrarMovimiento } from '../data/db.js';
 import { parseSKU } from '../modules/sku-engine.js';
 import { getStockLevel } from '../modules/alerts.js';
-import { showToast } from '../utils/dom.js';
+import { showToast, showCustomModal } from '../utils/dom.js';
 
 export default async function renderProductDetail(container, sku) {
-    const producto = await db.productos.get(sku);
+  const producto = await db.productos.get(sku);
 
-    if (!producto) {
-        container.innerHTML = `
+  if (!producto) {
+    container.innerHTML = `
       <button class="back-btn" onclick="history.back()">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="15 18 9 12 15 6"/>
@@ -18,13 +18,13 @@ export default async function renderProductDetail(container, sku) {
         <p>Producto no encontrado: ${sku}</p>
       </div>
     `;
-        return;
-    }
+    return;
+  }
 
-    const parsed = parseSKU(sku);
-    const level = getStockLevel(producto.stock);
+  const parsed = parseSKU(sku);
+  const level = getStockLevel(producto.stock);
 
-    container.innerHTML = `
+  container.innerHTML = `
     <button class="back-btn" id="backBtn">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="15 18 9 12 15 6"/>
@@ -56,87 +56,163 @@ export default async function renderProductDetail(container, sku) {
       </div>
     </div>
 
-    <div class="card">
-      <h3 class="section-title">Ajustar Stock</h3>
-      <div class="stock-adjust">
-        <button class="stock-adjust__btn stock-adjust__btn--minus" id="btnMinus">−</button>
-        <div class="stock-adjust__value stock-badge--${level}" id="stockDisplay">${producto.stock}</div>
-        <button class="stock-adjust__btn stock-adjust__btn--plus" id="btnPlus">+</button>
+    <div class="card card--adjust">
+      <div class="adjust-header">
+        <h3 class="section-title">Control de Inventario</h3>
+        <div class="current-stock-badge stock-badge--${level}">
+          <span class="label">STOCK:</span>
+          <span class="value" id="currentStockDisplay">${producto.stock}</span>
+        </div>
+      </div>
+
+      <div class="batch-adjust-card">
+        <div class="qty-control">
+          <button class="qty-btn" id="btnStepMinus" aria-label="Disminuir unidad">−</button>
+          <div class="qty-input-wrapper">
+             <input type="number" id="inputAdjustQty" value="1" min="1" max="999">
+             <span class="qty-label">UNIDADES</span>
+          </div>
+          <button class="qty-btn" id="btnStepPlus" aria-label="Aumentar unidad">+</button>
+        </div>
+
+        <div class="action-buttons-grid">
+          <button class="btn-batch btn-batch--salida" id="btnConfirmSalida">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+               <path d="M7 10l5 5 5-5M12 15V3m9 18H3"/>
+            </svg>
+            Retirar
+          </button>
+          <button class="btn-batch btn-batch--entrada" id="btnConfirmEntrada">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+               <path d="M7 11l5-5 5 5M12 6v12M3 21h18"/>
+            </svg>
+            Ingresar
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="mt-4">
-      <h3 class="section-title">Detalle</h3>
-      <div class="card">
-        <p><strong>Pieza:</strong> ${producto.detalle || 'N/A'}</p>
-        <p class="mt-2"><strong>Compatibilidad:</strong> ${producto.compatibilidad || 'N/A'}</p>
-        <p class="mt-2 text-muted" style="font-size:var(--fs-xs)">Modelo ID: ${parsed.modeloId}</p>
+    <div class="mt-6">
+      <h3 class="section-title">Detalles Técnicos</h3>
+      <div class="card detail-info-card">
+        <div class="info-row">
+          <span class="info-label">Pieza:</span>
+          <span class="info-value">${producto.detalle || 'N/A'}</span>
+        </div>
+        <div class="info-row mt-2">
+          <span class="info-label">Compatibilidad:</span>
+          <span class="info-value">${producto.compatibilidad || 'N/A'}</span>
+        </div>
+        <div class="info-row mt-3 pt-3 border-top">
+           <span class="info-label">Interno:</span>
+           <span class="sku-mono">${parsed.modeloId}</span>
+        </div>
       </div>
     </div>
 
-    <div class="mt-4">
-      <h3 class="section-title">Movimientos Recientes</h3>
-      <div id="movimientos" class="product-list"></div>
+    <div class="mt-6">
+      <h3 class="section-title">Historial de Movimientos</h3>
+      <div id="movimientos" class="movements-list"></div>
     </div>
   `;
 
-    const stockDisplay = container.querySelector('#stockDisplay');
+  const stockDisplay = container.querySelector('#currentStockDisplay');
+  const inputQty = container.querySelector('#inputAdjustQty');
 
-    container.querySelector('#backBtn').addEventListener('click', () => history.back());
+  container.querySelector('#backBtn').addEventListener('click', () => history.back());
 
-    container.querySelector('#btnPlus').addEventListener('click', async () => {
-        try {
-            const newStock = await registrarMovimiento(sku, 'entrada', 1);
-            updateStockDisplay(stockDisplay, newStock);
-            showToast(`+1 entrada → Stock: ${newStock}`, 'success');
-        } catch (e) {
-            showToast(e.message, 'error');
-        }
+  container.querySelector('#btnStepPlus').addEventListener('click', () => {
+    inputQty.value = parseInt(inputQty.value) + 1;
+  });
+
+  container.querySelector('#btnStepMinus').addEventListener('click', () => {
+    inputQty.value = Math.max(1, parseInt(inputQty.value) - 1);
+  });
+
+  container.querySelector('#btnConfirmEntrada').addEventListener('click', async () => {
+    const qty = parseInt(inputQty.value) || 0;
+    if (qty <= 0) return;
+
+    const confirmed = await showCustomModal({
+      title: 'Confirmar Ingreso',
+      message: `¿Deseas AGREGAR ${qty} unidades al stock de ${producto.modelo}?`,
+      confirmText: 'Confirmar Ingreso',
+      cancelText: 'Cancelar'
     });
 
-    container.querySelector('#btnMinus').addEventListener('click', async () => {
-        try {
-            const currentProduct = await db.productos.get(sku);
-            if (currentProduct.stock <= 0) {
-                showToast('Stock ya está en 0', 'error');
-                return;
-            }
-            const newStock = await registrarMovimiento(sku, 'salida', 1);
-            updateStockDisplay(stockDisplay, newStock);
-            showToast(`-1 salida → Stock: ${newStock}`, 'success');
-        } catch (e) {
-            showToast(e.message, 'error');
-        }
+    if (confirmed) {
+      try {
+        const newStock = await registrarMovimiento(sku, 'entrada', qty);
+        updateStockDisplay(stockDisplay, newStock);
+        showToast(`✅ +${qty} unidades agregadas`, 'success');
+        await loadMovimientos(container.querySelector('#movimientos'), sku);
+        inputQty.value = 1;
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+  });
+
+  container.querySelector('#btnConfirmSalida').addEventListener('click', async () => {
+    const qty = parseInt(inputQty.value) || 0;
+    if (qty <= 0) return;
+
+    const currentProduct = await db.productos.get(sku);
+    if (currentProduct.stock < qty) {
+      return showToast(`Stock insuficiente. Solo hay ${currentProduct.stock} disponibles.`, 'error');
+    }
+
+    const confirmed = await showCustomModal({
+      title: 'Confirmar Salida',
+      message: `¿Deseas RETIRAR ${qty} unidades del stock de ${producto.modelo}?`,
+      confirmText: 'Confirmar Retiro',
+      cancelText: 'Cancelar'
     });
 
-    await loadMovimientos(container.querySelector('#movimientos'), sku);
+    if (confirmed) {
+      try {
+        const newStock = await registrarMovimiento(sku, 'salida', qty);
+        updateStockDisplay(stockDisplay, newStock);
+        showToast(`✅ -${qty} unidades retiradas`, 'info');
+        await loadMovimientos(container.querySelector('#movimientos'), sku);
+        inputQty.value = 1;
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+  });
+
+  await loadMovimientos(container.querySelector('#movimientos'), sku);
 }
 
 function updateStockDisplay(el, stock) {
-    el.textContent = stock;
-    const level = getStockLevel(stock);
-    el.className = `stock-adjust__value stock-badge--${level}`;
+  el.textContent = stock;
+  const level = getStockLevel(stock);
+  const badge = el.closest('.current-stock-badge');
+  if (badge) {
+    badge.className = `current-stock-badge stock-badge--${level}`;
+  }
 }
 
 async function loadMovimientos(container, sku) {
-    const movimientos = await db.movimientos
-        .where('sku').equals(sku)
-        .reverse()
-        .limit(10)
-        .toArray();
+  const movimientos = await db.movimientos
+    .where('sku').equals(sku)
+    .reverse()
+    .limit(10)
+    .toArray();
 
-    if (movimientos.length === 0) {
-        container.innerHTML = '<p class="text-muted" style="font-size:var(--fs-sm);padding:var(--sp-3)">Sin movimientos registrados</p>';
-        return;
-    }
+  if (movimientos.length === 0) {
+    container.innerHTML = '<p class="text-muted" style="font-size:var(--fs-sm);padding:var(--sp-3)">Sin movimientos registrados</p>';
+    return;
+  }
 
-    container.innerHTML = '';
-    for (const m of movimientos) {
-        const isEntrada = m.tipo === 'entrada';
-        const date = new Date(m.timestamp);
-        const timeStr = date.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  container.innerHTML = '';
+  for (const m of movimientos) {
+    const isEntrada = m.tipo === 'entrada';
+    const date = new Date(m.timestamp);
+    const timeStr = date.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
-        container.innerHTML += `
+    container.innerHTML += `
       <div class="product-item">
         <div class="product-item__info">
           <div class="product-item__name" style="color:${isEntrada ? 'var(--entrada)' : 'var(--salida)'}">
@@ -149,5 +225,5 @@ async function loadMovimientos(container, sku) {
         </div>
       </div>
     `;
-    }
+  }
 }

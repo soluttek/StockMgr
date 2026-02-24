@@ -24,10 +24,10 @@ async function initializeApplication() {
     const viewContainer = document.getElementById('viewContainer');
 
     // Registro de rutas estáticas y dinámicas
-    registerRoute('/', (container) => renderDashboard(container));
-    registerRoute('/inventario', (container) => renderInventoryList(container));
-    registerRoute('/agregar', (container) => renderAddProduct(container));
-    registerRoute('/marcas', (container) => renderBrands(container));
+    registerRoute('/', (container, params) => renderDashboard(container, params));
+    registerRoute('/inventario', (container, params) => renderInventoryList(container, params));
+    registerRoute('/agregar', (container, params) => renderAddProduct(container, params));
+    registerRoute('/marcas', (container, params) => renderBrands(container, params));
     registerRoute('/marcas/:codigo/modelos', (container, params) => renderModels(container, params));
 
     initRouter(viewContainer);

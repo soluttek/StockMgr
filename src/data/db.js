@@ -2,10 +2,10 @@ import Dexie from 'dexie';
 
 const db = new Dexie('StockManagerDB');
 
-db.version(4).stores({
+db.version(6).stores({
     productos: '&sku, modelo, categoria, marca, estado, condicion, modeloId, stock, detalle, compatibilidad, createdAt, updatedAt',
     marcas: '++id, &codigo, nombre',
-    modelos: '++id, &modeloId, nombre, marcaCodigo',
+    modelos: '++id, modeloId, nombre, marcaCodigo',
     categorias: '++id, &codigo, nombre',
     movimientos: '++id, sku, tipo, cantidad, timestamp',
     syncQueue: '++id, action, payload, timestamp'
@@ -17,13 +17,13 @@ export async function seedIfEmpty(marcasData, modelosData, categoriasData) {
     // Comprobación de integridad agresiva
     const sampleProducts = await db.productos.limit(50).toArray();
     const isCorrupt = sampleProducts.some(p =>
+        p.sku.length !== 15 ||
         p.modelo.includes('\ufffd') ||
-        p.modelo.toLowerCase().includes('genrico') ||
-        p.modelo.toLowerCase().includes('batera')
+        p.modelo.toLowerCase().includes('genrico')
     );
 
     if (isCorrupt) {
-        console.warn('⚠️ Detectada base de datos corrupta. Ejecutando purga total de emergencia...');
+        console.warn('⚠️ Detectada base de datos incompatible o corrupta. Ejecutando purga total de emergencia...');
         await Promise.all([
             db.productos.clear(),
             db.marcas.clear(),
@@ -40,10 +40,11 @@ export async function seedIfEmpty(marcasData, modelosData, categoriasData) {
 
     const modelosCount = await db.modelos.count();
     if (modelosCount === 0 && modelosData) {
-        const entries = Object.entries(modelosData).map(([modeloId, nombre]) => {
-            const marcaCodigo = inferBrandFromModelName(nombre, marcasData);
-            return { modeloId, nombre, marcaCodigo };
-        });
+        const entries = Object.entries(modelosData).map(([modeloId, data]) => ({
+            modeloId,
+            nombre: data.nombre,
+            marcaCodigo: data.marca
+        }));
         await db.modelos.bulkAdd(entries);
     }
 
@@ -54,15 +55,6 @@ export async function seedIfEmpty(marcasData, modelosData, categoriasData) {
     }
 }
 
-function inferBrandFromModelName(modelName, marcasData) {
-    if (!marcasData) return '';
-    const brandNames = Object.entries(marcasData);
-    for (const [code, name] of brandNames) {
-        if (modelName.toLowerCase().includes(name.toLowerCase())) return code;
-    }
-    return '';
-}
-
 export async function importInventoryFromCSV(csvText) {
     const lines = csvText.trim().split('\n');
     const header = lines[0];
@@ -70,28 +62,26 @@ export async function importInventoryFromCSV(csvText) {
 
     const fixEncoding = (str) => {
         if (!str) return '';
-        // 1. Eliminar el carácter de reemplazo Unicode (el rombo con ?)
         let clean = str.replace(/\ufffd/g, '');
-
-        // 2. Corregir patrones comunes donde falta la letra acentuada
         return clean
             .replace(/Gen\s*rico/gi, 'Genérico')
             .replace(/Bater\s*a/gi, 'Batería')
             .replace(/L\s*gica/gi, 'Lógica')
             .replace(/C\s*mara/gi, 'Cámara')
             .replace(/M\s*dulo/gi, 'Módulo')
-            .replace(/Tel\s*fono/gi, 'Teléfono')
-            .replace(/Categor\s*a/gi, 'Categoría')
             .trim();
     };
 
     const productos = rows.map(line => {
         const parts = line.split(',');
         const sku = parts[0]?.trim();
-        if (!sku || sku.length !== 14) return null;
+        // Soportar legacy (14) y nuevo (15)
+        if (!sku || (sku.length !== 14 && sku.length !== 15)) return null;
+
+        const isOldFormat = sku.length === 14;
 
         return {
-            sku,
+            sku: isOldFormat ? `${sku.substring(0, 11)}0${sku.substring(11, 14)}` : sku,
             modelo: fixEncoding(parts[1]),
             detalle: fixEncoding(parts[2]),
             compatibilidad: parts[3]?.trim() || '[N/A]',
@@ -100,7 +90,7 @@ export async function importInventoryFromCSV(csvText) {
             marca: sku.substring(3, 6),
             estado: sku.substring(6, 8),
             condicion: sku.substring(8, 11),
-            modeloId: sku.substring(11, 14),
+            modeloId: isOldFormat ? `0${sku.substring(11, 14)}` : sku.substring(11, 15),
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };

@@ -14,7 +14,7 @@ export default async function renderAddProduct(container) {
   container.innerHTML = `
     <h2 class="section-title">Nuevo Producto</h2>
 
-    <div class="sku-preview" id="skuPreview">--------------</div>
+    <div class="sku-preview" id="skuPreview">---------------</div>
 
     <div class="form-group">
       <label>Categoría</label>
@@ -113,7 +113,7 @@ export default async function renderAddProduct(container) {
     const mar = selMarca.value || '___';
     const est = selEstado.value || '__';
     const con = selCondicion.value || '___';
-    const mod = selModelo.value || '___';
+    const mod = selModelo.value || '____';
     preview.textContent = `${cat}${mar}${est}${con}${mod}`;
 
     if (cat !== '___' && mar !== '___' && mod !== '___') {
@@ -149,9 +149,10 @@ export default async function renderAddProduct(container) {
         return;
       }
 
-      // Obtener el nombre del modelo desde nuestra lista cargada
+      // Obtener el nombre del modelo y la marca para el campo 'modelo' denormalizado
       const modeloObj = allModelos.find(m => m.modeloId === selModelo.value);
-      const modeloNombre = modeloObj ? modeloObj.nombre : 'Modelo desconocido';
+      const marcaObj = marcas.find(m => m.codigo === selMarca.value);
+      const modeloNombre = modeloObj && marcaObj ? `${marcaObj.nombre} ${modeloObj.nombre}` : 'Modelo desconocido';
       const stock = parseInt(inputStock.value) || 1;
 
       await db.productos.add({
@@ -168,6 +169,19 @@ export default async function renderAddProduct(container) {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
+
+      // Registrar movimiento inicial si hay stock
+      if (stock > 0) {
+        await db.movimientos.add({
+          sku,
+          tipo: 'entrada',
+          cantidad: stock,
+          stockAnterior: 0,
+          stockNuevo: stock,
+          timestamp: new Date().toISOString(),
+          nota: 'Carga inicial de producto'
+        });
+      }
 
       showToast(`✅ Producto guardado: ${sku}`, 'success');
       window.location.hash = `/producto/${sku}`;

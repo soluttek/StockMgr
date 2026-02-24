@@ -1,69 +1,69 @@
-SKU,Modelo Base,Detalle T‚cnico (Color/Specs),Compatibilidad (Info Extra),Stock
-BATSAM01AFT001,Samsung Galaxy A14,Bater¡a,[N/A],1
-BATSAM01AFT002,Samsung Galaxy A21s,Bater¡a,[N/A],1
-BATSAM01AFT003,Samsung Galaxy A30s,Bater¡a,[N/A],1
-BATSAM01AFT004,Samsung Galaxy A32,Bater¡a,[N/A],2
-BATSAM01AFT005,Samsung Galaxy A51,Bater¡a,[N/A],1
-BATSAM01AFT006,Samsung Galaxy A13,Bater¡a,[N/A],2
-BATSAM01AFT007,Samsung Galaxy A12,Bater¡a,[N/A],3
-BATSAM01AFT008,Samsung Galaxy A21,Bater¡a,[N/A],1
-BATSAM01AFT009,Samsung Galaxy A33,Bater¡a,[N/A],2
-BATSAM01AFT010,Samsung Galaxy A70,Bater¡a,[N/A],1
-BATSAM01AFT011,Samsung Galaxy S20 Ultra,Bater¡a,[N/A],1
-BATSAM01AFT012,Samsung Galaxy A20s,Bater¡a,[N/A],1
-BATSAM01AFT013,Samsung Galaxy J5 Prime,Bater¡a,[N/A],3
-BATSAM01AFT014,Samsung Galaxy A710 (A7 2016),Bater¡a,[N/A],1
-BATSAM01AFT015,Samsung Galaxy J4 Core,Bater¡a,[N/A],1
-BATSAM01AFT016,Samsung Galaxy A3,Bater¡a,[N/A],1
-BATSAM01AFT017,Samsung Galaxy J1,Bater¡a,[N/A],1
-BATSAM01AFT018,Samsung Galaxy J8,Bater¡a,[N/A],1
-BATSAM01AFT019,Samsung Galaxy Note 8,Bater¡a,[N/A],1
-BATMOT01AFT020,Motorola G9 Plus,Bater¡a,[N/A],1
-BATMOT01AFT021,Motorola G7 Play,Bater¡a,[N/A],1
-BATMOT01AFT022,Motorola Moto G8,Bater¡a,[N/A],2
-BATMOT01AFT023,Motorola E5 Play,Bater¡a,[N/A],2
-BATMOT01AFT024,Motorola E4 / G5,Bater¡a,[N/A],1
-BATMOT01AFT025,Motorola X4,Bater¡a,[N/A],1
-BATMOT01AFT026,Motorola E5,Bater¡a,[N/A],1
-BATMOT01AFT027,Motorola G50,Bater¡a,[N/A],2
-BATMOT01AFT028,Motorola G13,Bater¡a,[N/A],1
-BATMOT01AFT029,Motorola G8 Power,Bater¡a,[N/A],1
-BATMOT01AFT030,Motorola G60s,Bater¡a,[N/A],1
-BATMOT01AFT031,Motorola Moto X Style,Bater¡a,[N/A],1
-BATMOT01AFT032,Motorola G82 5G,Bater¡a,[N/A],1
-BATXIO01AFT033,Xiaomi Redmi Note 11 Pro,Bater¡a,[N/A],2
-BATXIO01AFT034,Xiaomi Redmi 9s,Bater¡a,[N/A],2
-BATXIO01AFT035,Xiaomi Redmi 8 Pro,Bater¡a,[N/A],1
-BATXIO01AFT036,Xiaomi Redmi Note 7 Pro,Bater¡a,[N/A],1
-BATXIO01AFT037,Xiaomi Mi 4c,Bater¡a,[N/A],1
-BATXIO01AFT038,Xiaomi Redmi Note 3,Bater¡a,[N/A],1
-BATXIO01AFT039,Xiaomi Mi 9T,Bater¡a,[N/A],2
-BATXIO01AFT040,Xiaomi Mi 11+,Bater¡a,[N/A],1
-BATXIO01AFT041,Xiaomi Redmi 9A,Bater¡a,[N/A],1
-BATREA01AFT042,Realme (Gen‚rico),Bater¡a,[N/A],1
-BATXIO01AFT043,Xiaomi Poco X3,Bater¡a,[N/A],1
-BATOPP01AFT044,Oppo Reno 7,Bater¡a,[N/A],1
-BATHUA01AFT045,Huawei P Smart,Bater¡a,[N/A],1
-BATHUA01AFT046,Huawei Mate 10,Bater¡a,[N/A],1
-BATHUA01AFT047,Huawei Y5,Bater¡a,[N/A],1
-BATHUA01AFT048,Huawei P20,Bater¡a,[N/A],1
-BATHUA01AFT049,Huawei Y6,Bater¡a,[N/A],1
-BATHIS01AFT050,Hisense U963,Bater¡a,[N/A],2
-BATASU01AFT051,Asus (Gen‚rico),Bater¡a,[N/A],1
-BATTCL01AFT052,TCL (Gen‚rico),Bater¡a,[N/A],1
-BATGPR01AFT053,GoPro (Gen‚rico),Bater¡a,[N/A],1
-BATLEN01AFT054,Lenovo Tab,Bater¡a,[N/A],1
-BATZTE01AFT055,ZTE Blade A71,Bater¡a,[N/A],1
-BATZTE01AFT056,ZTE Z988,Bater¡a,[N/A],1
-BATZTE01AFT057,ZTE A7,Bater¡a,[N/A],1
-BATZTE01AFT058,ZTE V9,Bater¡a,[N/A],1
-BATZTE01AFT059,ZTE L210,Bater¡a,[N/A],1
-BATZTE01AFT060,ZTE L9,Bater¡a,[N/A],1
-BATHON01AFT061,Honor X9B,Bater¡a,[N/A],1
-BATHON01AFT062,Honor X10 5G,Bater¡a,[N/A],1
-BATALC01AFT063,Alcatel (Gen‚rico),Bater¡a,[N/A],1
-BATALC01AFT064,Alcatel A3,Bater¡a,[N/A],1
-BATALC01AFT065,Alcatel Pixi 4,Bater¡a,[N/A],1
+SKU,Modelo Base,Detalle Tï¿½cnico (Color/Specs),Compatibilidad (Info Extra),Stock
+BATSAM01AFT001,Samsung Galaxy A14,Baterï¿½a,[N/A],1
+BATSAM01AFT002,Samsung Galaxy A21s,Baterï¿½a,[N/A],1
+BATSAM01AFT003,Samsung Galaxy A30s,Baterï¿½a,[N/A],1
+BATSAM01AFT004,Samsung Galaxy A32,Baterï¿½a,[N/A],2
+BATSAM01AFT005,Samsung Galaxy A51,Baterï¿½a,[N/A],1
+BATSAM01AFT006,Samsung Galaxy A13,Baterï¿½a,[N/A],2
+BATSAM01AFT007,Samsung Galaxy A12,Baterï¿½a,[N/A],3
+BATSAM01AFT008,Samsung Galaxy A21,Baterï¿½a,[N/A],1
+BATSAM01AFT009,Samsung Galaxy A33,Baterï¿½a,[N/A],2
+BATSAM01AFT010,Samsung Galaxy A70,Baterï¿½a,[N/A],1
+BATSAM01AFT011,Samsung Galaxy S20 Ultra,Baterï¿½a,[N/A],1
+BATSAM01AFT012,Samsung Galaxy A20s,Baterï¿½a,[N/A],1
+BATSAM01AFT013,Samsung Galaxy J5 Prime,Baterï¿½a,[N/A],3
+BATSAM01AFT014,Samsung Galaxy A710 (A7 2016),Baterï¿½a,[N/A],1
+BATSAM01AFT015,Samsung Galaxy J4 Core,Baterï¿½a,[N/A],1
+BATSAM01AFT016,Samsung Galaxy A3,Baterï¿½a,[N/A],1
+BATSAM01AFT017,Samsung Galaxy J1,Baterï¿½a,[N/A],1
+BATSAM01AFT018,Samsung Galaxy J8,Baterï¿½a,[N/A],1
+BATSAM01AFT019,Samsung Galaxy Note 8,Baterï¿½a,[N/A],1
+BATMOT01AFT020,Motorola G9 Plus,Baterï¿½a,[N/A],1
+BATMOT01AFT021,Motorola G7 Play,Baterï¿½a,[N/A],1
+BATMOT01AFT022,Motorola Moto G8,Baterï¿½a,[N/A],2
+BATMOT01AFT023,Motorola E5 Play,Baterï¿½a,[N/A],2
+BATMOT01AFT024,Motorola E4 / G5,Baterï¿½a,[N/A],1
+BATMOT01AFT025,Motorola X4,Baterï¿½a,[N/A],1
+BATMOT01AFT026,Motorola E5,Baterï¿½a,[N/A],1
+BATMOT01AFT027,Motorola G50,Baterï¿½a,[N/A],2
+BATMOT01AFT028,Motorola G13,Baterï¿½a,[N/A],1
+BATMOT01AFT029,Motorola G8 Power,Baterï¿½a,[N/A],1
+BATMOT01AFT030,Motorola G60s,Baterï¿½a,[N/A],1
+BATMOT01AFT031,Motorola Moto X Style,Baterï¿½a,[N/A],1
+BATMOT01AFT032,Motorola G82 5G,Baterï¿½a,[N/A],1
+BATXIO01AFT033,Xiaomi Redmi Note 11 Pro,Baterï¿½a,[N/A],2
+BATXIO01AFT034,Xiaomi Redmi 9s,Baterï¿½a,[N/A],2
+BATXIO01AFT035,Xiaomi Redmi 8 Pro,Baterï¿½a,[N/A],1
+BATXIO01AFT036,Xiaomi Redmi Note 7 Pro,Baterï¿½a,[N/A],1
+BATXIO01AFT037,Xiaomi Mi 4c,Baterï¿½a,[N/A],1
+BATXIO01AFT038,Xiaomi Redmi Note 3,Baterï¿½a,[N/A],1
+BATXIO01AFT039,Xiaomi Mi 9T,Baterï¿½a,[N/A],2
+BATXIO01AFT040,Xiaomi Mi 11+,Baterï¿½a,[N/A],1
+BATXIO01AFT041,Xiaomi Redmi 9A,Baterï¿½a,[N/A],1
+BATREA01AFT042,Realme (Genï¿½rico),Baterï¿½a,[N/A],1
+BATXIO01AFT043,Xiaomi Poco X3,Baterï¿½a,[N/A],1
+BATOPP01AFT044,Oppo Reno 7,Baterï¿½a,[N/A],1
+BATHUA01AFT045,Huawei P Smart,Baterï¿½a,[N/A],1
+BATHUA01AFT046,Huawei Mate 10,Baterï¿½a,[N/A],1
+BATHUA01AFT047,Huawei Y5,Baterï¿½a,[N/A],1
+BATHUA01AFT048,Huawei P20,Baterï¿½a,[N/A],1
+BATHUA01AFT049,Huawei Y6,Baterï¿½a,[N/A],1
+BATHIS01AFT050,Hisense U963,Baterï¿½a,[N/A],2
+BATASU01AFT051,Asus (Genï¿½rico),Baterï¿½a,[N/A],1
+BATTCL01AFT052,TCL (Genï¿½rico),Baterï¿½a,[N/A],1
+BATGPR01AFT053,GoPro (Genï¿½rico),Baterï¿½a,[N/A],1
+BATLEN01AFT054,Lenovo Tab,Baterï¿½a,[N/A],1
+BATZTE01AFT055,ZTE Blade A71,Baterï¿½a,[N/A],1
+BATZTE01AFT056,ZTE Z988,Baterï¿½a,[N/A],1
+BATZTE01AFT057,ZTE A7,Baterï¿½a,[N/A],1
+BATZTE01AFT058,ZTE V9,Baterï¿½a,[N/A],1
+BATZTE01AFT059,ZTE L210,Baterï¿½a,[N/A],1
+BATZTE01AFT060,ZTE L9,Baterï¿½a,[N/A],1
+BATHON01AFT061,Honor X9B,Baterï¿½a,[N/A],1
+BATHON01AFT062,Honor X10 5G,Baterï¿½a,[N/A],1
+BATALC01AFT063,Alcatel (Genï¿½rico),Baterï¿½a,[N/A],1
+BATALC01AFT064,Alcatel A3,Baterï¿½a,[N/A],1
+BATALC01AFT065,Alcatel Pixi 4,Baterï¿½a,[N/A],1
 TJCSAM01OEM007,Samsung Galaxy A12,Pin de Carga,[N/A],1
 TJCSAM01OEM066,Samsung Galaxy A03s,Pin de Carga,[N/A],2
 TJCSAM01OEM067,Samsung Galaxy A53,Pin de Carga,[N/A],1
@@ -98,34 +98,34 @@ TJCXIO01OEM089,Xiaomi Note 9 Pro,Pin de Carga,[N/A],1
 TJCOPP01OEM090,Oppo A15,Pin de Carga,[N/A],2
 TJCOPP01OEM091,Oppo C11,Pin de Carga,[N/A],1
 TJCOPP01OEM092,Oppo A54,Pin de Carga,[N/A],1
-LOGXIO02OEM037,Xiaomi Mi 4c,Tarjeta L¢gica,[N/A],1
-LOGXIO02OEM093,Redmi Note X4,Tarjeta L¢gica,[N/A],1
-LOGXIO02OEM086,Mi A2 Lite,Tarjeta L¢gica,[N/A],1
-LOGHUA02OEM094,Huawei P20 Lite,Tarjeta L¢gica,[N/A],1
-LOGHUA02OEM088,Huawei P40 Lite,Tarjeta L¢gica,[N/A],1
-LOGHUA02OEM095,Huawei Y5 2018,Tarjeta L¢gica,[N/A],1
-LOGHUA02OEM047,Huawei Y5 Pro,Tarjeta L¢gica,[N/A],1
-LOGMOT02OEM026,Motorola Moto E5,Tarjeta L¢gica,[N/A],2
-LOGMOT02OEM022,Motorola Moto G8,Tarjeta L¢gica,[N/A],2
-LOGMOT02OEM096,Motorola E5 Plus,Tarjeta L¢gica,[N/A],1
-LOGMOT02OEM097,Motorola E4,Tarjeta L¢gica,[N/A],1
-LOGMOT02OEM098,Motorola G6 Play,Tarjeta L¢gica,[N/A],1
-LOGSAM02OEM099,Samsung A10s,Tarjeta L¢gica,[N/A],1
-LOGSAM02OEM100,Samsung A02,Tarjeta L¢gica,[N/A],1
-LOGSAM02OEM019,Samsung Note 8,Tarjeta L¢gica,[N/A],1
-LOGSAM02OEM002,Samsung A21s,Tarjeta L¢gica,[N/A],1
-LOGSAM02OEM005,Samsung A51,Tarjeta L¢gica,[N/A],1
-LOGSAM02OEM101,Samsung J7 Pro,Tarjeta L¢gica,[N/A],1
-LOGALC02OEM102,Alcatel 4047,Tarjeta L¢gica,[N/A],1
-LOGALC02OEM103,Alcatel Idol 3,Tarjeta L¢gica,[N/A],2
-LOGALC02OEM104,Alcatel 1L Pro,Tarjeta L¢gica,[N/A],1
-LOGALC02OEM105,Alcatel X3,Tarjeta L¢gica,[N/A],1
-LOGLAN02OEM080,Lanix M9,Tarjeta L¢gica,[N/A],1
-LOGNIX02OEM106,Nix Fly,Tarjeta L¢gica,[N/A],1
-LOGOPP02OEM090,Oppo A15,Tarjeta L¢gica,[N/A],2
-LOGOPP02OEM107,Oppo A54 4G,Tarjeta L¢gica,[N/A],1
-LOGOPP02OEM091,Oppo C11,Tarjeta L¢gica,[N/A],1
-LOGLGX02OEM108,LG K25,Tarjeta L¢gica,[N/A],1
-LOGZTE02OEM109,ZTE Axon 50 Lite,Tarjeta L¢gica,[N/A],1
-LOGZTE02OEM110,ZTE V Smart,Tarjeta L¢gica,[N/A],1
-LOGZTE02OEM072,ZTE A5,Tarjeta L¢gica,[N/A],1
+LOGXIO02OEM037,Xiaomi Mi 4c,Tarjeta Lï¿½gica,[N/A],1
+LOGXIO02OEM093,Redmi Note X4,Tarjeta Lï¿½gica,[N/A],1
+LOGXIO02OEM086,Mi A2 Lite,Tarjeta Lï¿½gica,[N/A],1
+LOGHUA02OEM094,Huawei P20 Lite,Tarjeta Lï¿½gica,[N/A],1
+LOGHUA02OEM088,Huawei P40 Lite,Tarjeta Lï¿½gica,[N/A],1
+LOGHUA02OEM095,Huawei Y5 2018,Tarjeta Lï¿½gica,[N/A],1
+LOGHUA02OEM047,Huawei Y5 Pro,Tarjeta Lï¿½gica,[N/A],1
+LOGMOT02OEM026,Motorola Moto E5,Tarjeta Lï¿½gica,[N/A],2
+LOGMOT02OEM022,Motorola Moto G8,Tarjeta Lï¿½gica,[N/A],2
+LOGMOT02OEM096,Motorola E5 Plus,Tarjeta Lï¿½gica,[N/A],1
+LOGMOT02OEM097,Motorola E4,Tarjeta Lï¿½gica,[N/A],1
+LOGMOT02OEM098,Motorola G6 Play,Tarjeta Lï¿½gica,[N/A],1
+LOGSAM02OEM099,Samsung A10s,Tarjeta Lï¿½gica,[N/A],1
+LOGSAM02OEM100,Samsung A02,Tarjeta Lï¿½gica,[N/A],1
+LOGSAM02OEM019,Samsung Note 8,Tarjeta Lï¿½gica,[N/A],1
+LOGSAM02OEM002,Samsung A21s,Tarjeta Lï¿½gica,[N/A],1
+LOGSAM02OEM005,Samsung A51,Tarjeta Lï¿½gica,[N/A],1
+LOGSAM02OEM101,Samsung J7 Pro,Tarjeta Lï¿½gica,[N/A],1
+LOGALC02OEM102,Alcatel 4047,Tarjeta Lï¿½gica,[N/A],1
+LOGALC02OEM103,Alcatel Idol 3,Tarjeta Lï¿½gica,[N/A],2
+LOGALC02OEM104,Alcatel 1L Pro,Tarjeta Lï¿½gica,[N/A],1
+LOGALC02OEM105,Alcatel X3,Tarjeta Lï¿½gica,[N/A],1
+LOGLAN02OEM080,Lanix M9,Tarjeta Lï¿½gica,[N/A],1
+LOGNIX02OEM106,Nix Fly,Tarjeta Lï¿½gica,[N/A],1
+LOGOPP02OEM090,Oppo A15,Tarjeta Lï¿½gica,[N/A],2
+LOGOPP02OEM107,Oppo A54 4G,Tarjeta Lï¿½gica,[N/A],1
+LOGOPP02OEM091,Oppo C11,Tarjeta Lï¿½gica,[N/A],1
+LOGLGX02OEM108,LG K25,Tarjeta Lï¿½gica,[N/A],1
+LOGZTE02OEM109,ZTE Axon 50 Lite,Tarjeta Lï¿½gica,[N/A],1
+LOGZTE02OEM110,ZTE V Smart,Tarjeta Lï¿½gica,[N/A],1
+LOGZTE02OEM072,ZTE A5,Tarjeta Lï¿½gica,[N/A],1

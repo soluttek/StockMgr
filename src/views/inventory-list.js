@@ -4,18 +4,32 @@ import categoriasData from '../data/categorias.json';
 import marcasData from '../data/marcas.json';
 import { createElement, setupDragScroll } from '../utils/dom.js';
 
-let currentFilter = { categoria: '', marca: '', search: '' };
+let currentFilter = { categoria: '', marca: '', search: '', exactMode: false };
 
-export default async function renderInventoryList(container) {
+export default async function renderInventoryList(container, params = {}) {
     // Resetear filtros al entrar para evitar estados "fantasma"
-    currentFilter = { categoria: '', marca: '', search: '' };
+    currentFilter = {
+        categoria: '',
+        marca: '',
+        search: (params.q || '').toLowerCase(),
+        exactMode: false
+    };
 
     container.innerHTML = `
-    <div class="search-bar">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" id="searchInput" placeholder="Buscar por modelo o SKU..." autocomplete="off">
+    <div class="search-header">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar por modelo o SKU..." autocomplete="off">
+      </div>
+      <div class="search-controls">
+         <label class="search-toggle">
+            <input type="checkbox" id="exactSearchToggle">
+            <span class="toggle-track"></span>
+            <span class="toggle-text">Búsqueda Exacta</span>
+         </label>
+      </div>
     </div>
 
     <div class="filter-chips" id="categoryFilters"></div>
@@ -60,6 +74,10 @@ export default async function renderInventoryList(container) {
     }
 
     const searchInput = container.querySelector('#searchInput');
+    searchInput.value = currentFilter.search;
+
+    const exactToggle = container.querySelector('#exactSearchToggle');
+    exactToggle.checked = currentFilter.exactMode;
 
     // Habilitar arrastre con ratón (Desktop UX)
     setupDragScroll(catContainer);
@@ -72,6 +90,11 @@ export default async function renderInventoryList(container) {
             currentFilter.search = e.target.value.toLowerCase();
             refreshProductList(container);
         }, 200);
+    });
+
+    exactToggle.addEventListener('change', (e) => {
+        currentFilter.exactMode = e.target.checked;
+        refreshProductList(container);
     });
 
     await refreshProductList(container);
@@ -93,7 +116,6 @@ async function refreshProductList(container) {
     const listEl = container.querySelector('#productList');
     let products = await db.productos.toArray();
 
-    // Filtrado reactivo (Clean Code: Early exit si no hay productos)
     if (products.length === 0) {
         listEl.innerHTML = renderEmptyState('No hay productos en la base de datos');
         return;
@@ -106,17 +128,53 @@ async function refreshProductList(container) {
     if (currentFilter.marca) {
         products = products.filter(p => p.marca === currentFilter.marca);
     }
-    if (currentFilter.search) {
-        const keywords = currentFilter.search.toLowerCase().split(' ').filter(word => word.length > 0);
+
+    const query = (currentFilter.search || '').toLowerCase();
+    if (query) {
+        const keywords = query.split(' ').filter(word => word.length > 0);
+
         products = products.filter(p => {
-            const productText = `${p.modelo} ${p.sku} ${p.detalle || ''}`.toLowerCase();
-            // Todas las palabras clave deben estar presentes en cualquier orden
-            return keywords.every(kw => productText.includes(kw));
+            const modelName = p.modelo.toLowerCase();
+            const sku = p.sku.toLowerCase();
+            const productText = `${modelName} ${sku} ${(p.detalle || '').toLowerCase()}`;
+
+            if (currentFilter.exactMode) {
+                // MODO EXACTO: Debe coincidir el nombre completo del modelo o el SKU
+                return modelName === query || sku === query;
+            } else {
+                // MODO FLEXIBLE: Todas las palabras clave deben estar presentes
+                return keywords.every(kw => productText.includes(kw));
+            }
         });
     }
 
-    // Ordenar por stock (Prioridad operacional)
-    products.sort((a, b) => a.stock - b.stock);
+    // Ordenar por relevancia (A3 antes que A30s)
+    products.sort((a, b) => {
+        if (query) {
+            const nameA = a.modelo.toLowerCase();
+            const nameB = b.modelo.toLowerCase();
+
+            // 1. Prioridad: Coincidencia exacta
+            const exactA = nameA === query;
+            const exactB = nameB === query;
+            if (exactA && !exactB) return -1;
+            if (!exactA && exactB) return 1;
+
+            // 2. Prioridad: Empieza por
+            const startsA = nameA.startsWith(query);
+            const startsB = nameB.startsWith(query);
+            if (startsA && !startsB) return -1;
+            if (!startsA && startsB) return 1;
+
+            // 3. Prioridad: Longitud de cadena (más corto = más específico/base)
+            if (nameA.length !== nameB.length) {
+                return nameA.length - nameB.length;
+            }
+        }
+
+        // 4. Prioridad: Stock
+        return a.stock - b.stock;
+    });
 
     if (products.length === 0) {
         listEl.innerHTML = renderEmptyState('No se encontraron coincidencias');

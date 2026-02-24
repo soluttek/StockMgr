@@ -11,12 +11,21 @@ export function navigate(path) {
 
 export function initRouter(appContainer) {
     async function handleRoute() {
-        const hash = window.location.hash.slice(1) || '/';
+        // Separar hash de query string
+        const fullHash = window.location.hash.slice(1) || '/';
+        const [hash, queryString] = fullHash.split('?');
+
+        const queryParams = {};
+        if (queryString) {
+            new URLSearchParams(queryString).forEach((val, key) => {
+                queryParams[key] = val;
+            });
+        }
 
         let handler = routes[hash];
-        let params = {};
+        let params = { ...queryParams };
 
-        // Soporte básico para rutas con parámetros (ej: /marcas/:codigo/modelos)
+        // Soporte para rutas dinámicas (/:param)
         if (!handler) {
             for (const path in routes) {
                 if (path.includes(':')) {
