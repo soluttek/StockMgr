@@ -169,7 +169,7 @@ async function renderModelList(container, marcaCodigo, filter = '') {
             className: 'brand-item',
             style: 'cursor:pointer; transition:all 0.2s',
             onclick: () => {
-                navigate(`/inventario?q=${model.nombre}`);
+                navigate(`/inventario?q=${model.nombre}&marca=${marcaCodigo}`);
             }
         }, [
             createElement('span', { className: 'brand-item__code', textContent: model.modeloId }),
@@ -180,7 +180,7 @@ async function renderModelList(container, marcaCodigo, filter = '') {
             }),
             createElement('button', {
                 className: 'btn-icon',
-                innerHTML: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+                innerHTML: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
                 onclick: async (e) => {
                     e.stopPropagation();
                     const confirmed1 = await showCustomModal({

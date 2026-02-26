@@ -10,7 +10,7 @@ export default async function renderInventoryList(container, params = {}) {
     // Resetear filtros al entrar para evitar estados "fantasma"
     currentFilter = {
         categoria: '',
-        marca: '',
+        marca: params.marca || '',
         search: (params.q || '').toLowerCase(),
         exactMode: false
     };
@@ -99,6 +99,12 @@ export default async function renderInventoryList(container, params = {}) {
 
     await refreshProductList(container);
 
+    // Si venimos con una marca pre-filtrada por URL, marcamos el chip correspondiente
+    if (currentFilter.marca) {
+        brandContainer.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        brandContainer.querySelector(`[data-code="${currentFilter.marca}"]`)?.classList.add('active');
+    }
+
     function setFilter(type, value) {
         currentFilter[type] = value;
         const parent = type === 'categoria' ? catContainer : brandContainer;
@@ -131,19 +137,53 @@ async function refreshProductList(container) {
 
     const query = (currentFilter.search || '').toLowerCase();
     if (query) {
-        const keywords = query.split(' ').filter(word => word.length > 0);
+        // Obtenemos palabras significativas (evitamos "galaxy", "huawei", "moto" etc si buscamos algo más específico)
+        const commonWords = ['galaxy', 'samsung', 'huawei', 'motorola', 'moto', 'xiaomi', 'redmi', 'poco', 'honor', 'oppo'];
+        let keywords = query.split(' ').filter(word => word.length > 0);
+
+        // Si hay varias palabras, intentamos no filtrar solo por la marca
+        if (keywords.length > 1) {
+            keywords = keywords.filter(w => !commonWords.includes(w));
+        }
 
         products = products.filter(p => {
             const modelName = p.modelo.toLowerCase();
             const sku = p.sku.toLowerCase();
-            const productText = `${modelName} ${sku} ${(p.detalle || '').toLowerCase()}`;
+            const detalle = (p.detalle || '').toLowerCase();
 
             if (currentFilter.exactMode) {
-                // MODO EXACTO: Debe coincidir el nombre completo del modelo o el SKU
-                return modelName === query || sku === query;
+                // MODO EXACTO INTELIGENTE: Coincidencia total o sufijo exacto precedido por espacio
+                // (ej: "A3" debe encontrar "Samsung Galaxy A3" pero no "A30")
+                const isExactModel = modelName === query || modelName.endsWith(' ' + query);
+                return isExactModel || sku === query;
             } else {
-                // MODO FLEXIBLE: Todas las palabras clave deben estar presentes
-                return keywords.every(kw => productText.includes(kw));
+                // MODO FAMILIA/EXPANSIVO (OR Inteligente):
+                // Queremos encontrar cualquier producto que coincida con ALGUNA de las palabras clave en el modelo
+                // Ej: "Y5 2018" -> encuentra "Y5", "Y5 Pro", "Y5 2018"
+
+                // Calculamos un "score" de coincidencia
+                let matchScore = 0;
+
+                keywords.forEach(kw => {
+                    const inModel = modelName.includes(kw);
+                    if (inModel) matchScore += 2; // Las coincidencias en modelo valen más
+                });
+
+                // Si no hay coincidencias directas en el modelo, probamos el SKU/Detalle como último recurso
+                if (matchScore === 0) {
+                    const hasAnyMatch = keywords.some(kw => {
+                        // Protegemos el SKU del ruido si la palabra es muy corta (<3 letras)
+                        const inSku = kw.length >= 3 && sku.includes(kw);
+                        const inDetalle = detalle.includes(kw);
+                        return inSku || inDetalle;
+                    });
+                    if (hasAnyMatch) matchScore += 1;
+                }
+
+                // Guardamos el score temporalmente para la ordenación
+                if (matchScore > 0) p._searchScore = matchScore;
+
+                return matchScore > 0;
             }
         });
     }
@@ -154,27 +194,42 @@ async function refreshProductList(container) {
             const nameA = a.modelo.toLowerCase();
             const nameB = b.modelo.toLowerCase();
 
-            // 1. Prioridad: Coincidencia exacta
-            const exactA = nameA === query;
-            const exactB = nameB === query;
-            if (exactA && !exactB) return -1;
-            if (!exactA && exactB) return 1;
+            // 0. Prioridad Total: Switch de modo exacto
+            if (currentFilter.exactMode) return 0; // El filtro ya hizo todo el trabajo duro
 
-            // 2. Prioridad: Empieza por
+            // 1. Prioridad: Coincidencia de string idéntico (ignorando prefijos)
+            const exactSufA = nameA === query || nameA.endsWith(' ' + query);
+            const exactSufB = nameB === query || nameB.endsWith(' ' + query);
+            if (exactSufA && !exactSufB) return -1;
+            if (!exactSufA && exactSufB) return 1;
+
+            // 2. Prioridad: Score de búsqueda (más palabras coincidentes = arriba)
+            const scoreA = a._searchScore || 0;
+            const scoreB = b._searchScore || 0;
+            if (scoreA !== scoreB) {
+                return scoreB - scoreA; // Orden descendente (mayor score primero)
+            }
+
+            // 3. Prioridad: Empieza por
             const startsA = nameA.startsWith(query);
             const startsB = nameB.startsWith(query);
             if (startsA && !startsB) return -1;
             if (!startsA && startsB) return 1;
 
-            // 3. Prioridad: Longitud de cadena (más corto = más específico/base)
+            // 4. Prioridad: Longitud de cadena (más corto = más específico/base, ej: Y5 antes que Y5 Pro)
             if (nameA.length !== nameB.length) {
                 return nameA.length - nameB.length;
             }
         }
 
-        // 4. Prioridad: Stock
+        // 5. Prioridad: Stock
         return a.stock - b.stock;
     });
+
+    // Limpiamos los scores temporales
+    if (query && !currentFilter.exactMode) {
+        products.forEach(p => delete p._searchScore);
+    }
 
     if (products.length === 0) {
         listEl.innerHTML = renderEmptyState('No se encontraron coincidencias');
