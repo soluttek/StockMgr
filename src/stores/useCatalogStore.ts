@@ -17,7 +17,7 @@ export const useCatalogStore = defineStore('catalog', () => {
     error.value = null
 
     try {
-      // Cargamos el catálogo base (idealmente con paginación, pero para prototipo pedimos un límite prudente)
+      console.log('📡 Sincronizando catálogo...')
       const [productsRes, brandsRes, categoriesRes, modelsRes] = await Promise.all([
         supabase.from('products').select('*').limit(1000),
         supabase.from('brands').select('*'),
@@ -34,9 +34,10 @@ export const useCatalogStore = defineStore('catalog', () => {
       brands.value = brandsRes.data as Brand[]
       categories.value = categoriesRes.data as Category[]
       models.value = modelsRes.data as DeviceModel[]
+      console.log('✅ Catálogo sincronizado:', products.value.length, 'productos')
       
     } catch (err: any) {
-      console.error('Error fetching catalog data:', err)
+      console.error('❌ Error sincronizando catálogo:', err)
       error.value = err.message || 'Error loading catalog'
     } finally {
       isLoading.value = false
