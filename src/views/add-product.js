@@ -1,60 +1,66 @@
-import db from '../data/db.js';
-import { generateSKU, getCategorias, getMarcas, getEstados, getCondiciones } from '../modules/sku-engine.js';
-import { showToast } from '../utils/dom.js';
+import db from "../data/db.js";
+import {
+	generateSKU,
+	getCategorias,
+	getCondiciones,
+	getEstados,
+	getMarcas,
+} from "../modules/sku-engine.js";
+import { showToast } from "../utils/dom.js";
 
 export default async function renderAddProduct(container) {
-  const categorias = getCategorias();
-  const marcas = getMarcas();
-  const estados = getEstados();
-  const condiciones = getCondiciones();
+	const categorias = getCategorias();
+	const marcas = getMarcas();
+	const estados = getEstados();
+	const condiciones = getCondiciones();
 
-  // Cargar todos los modelos desde IndexedDB para el filtrado reactivo
-  const allModelos = await db.modelos.toArray();
+	// Cargar todos los modelos desde IndexedDB para el filtrado reactivo
+	const allModelos = await db.modelos.toArray();
 
-  container.innerHTML = `
+	container.innerHTML = `
     <h2 class="section-title">Nuevo Producto</h2>
 
     <div class="sku-preview" id="skuPreview">---------------</div>
 
     <div class="form-group">
-      <label>Categoría</label>
+      <label for="selCategoria">Categoría</label>
       <select id="selCategoria">
         <option value="">Seleccionar...</option>
-        ${categorias.map(c => `<option value="${c.codigo}">${c.codigo} — ${c.nombre}</option>`).join('')}
+        ${categorias.map((c) => `<option value="${c.codigo}">${c.codigo} — ${c.nombre}</option>`).join("")}
       </select>
     </div>
 
     <div class="form-group">
-      <label>Marca</label>
+      <label for="selMarca">Marca</label>
       <select id="selMarca">
         <option value="">Seleccionar...</option>
-        ${marcas.map(m => `<option value="${m.codigo}">${m.codigo} — ${m.nombre}</option>`).join('')}
+        ${marcas.map((m) => `<option value="${m.codigo}">${m.codigo} — ${m.nombre}</option>`).join("")}
       </select>
     </div>
 
     <div class="form-group">
-      <label>Estado</label>
+      <label for="selEstado">Estado</label>
       <select id="selEstado">
-        ${estados.map(e => `<option value="${e.codigo}">${e.codigo} — ${e.nombre}</option>`).join('')}
+        ${estados.map((e) => `<option value="${e.codigo}">${e.codigo} — ${e.nombre}</option>`).join("")}
       </select>
     </div>
 
     <div class="form-group">
-      <label>Condición</label>
+      <label for="selCondicion">Condición</label>
       <select id="selCondicion">
-        ${condiciones.map(c => `<option value="${c.codigo}">${c.codigo} — ${c.nombre}</option>`).join('')}
+        ${condiciones.map((c) => `<option value="${c.codigo}">${c.codigo} — ${c.nombre}</option>`).join("")}
       </select>
     </div>
 
     <div class="form-group">
-      <label>Modelo</label>
+      <label for="selModelo">Modelo</label>
       <select id="selModelo">
         <option value="">Seleccionar marca primero...</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label>Stock Inicial</label>
+      <label for="inputStock">Stock Inicial</label>
       <input type="number" id="inputStock" value="1" min="0" max="9999">
     </div>
 
@@ -69,125 +75,133 @@ export default async function renderAddProduct(container) {
     <div id="errorMsg" class="mt-2 text-center" style="color:var(--stock-critical);font-size:var(--fs-sm);display:none"></div>
   `;
 
-  const selCategoria = container.querySelector('#selCategoria');
-  const selMarca = container.querySelector('#selMarca');
-  const selEstado = container.querySelector('#selEstado');
-  const selCondicion = container.querySelector('#selCondicion');
-  const selModelo = container.querySelector('#selModelo');
-  const inputStock = container.querySelector('#inputStock');
-  const preview = container.querySelector('#skuPreview');
-  const errorMsg = container.querySelector('#errorMsg');
+	const selCategoria = container.querySelector("#selCategoria");
+	const selMarca = container.querySelector("#selMarca");
+	const selEstado = container.querySelector("#selEstado");
+	const selCondicion = container.querySelector("#selCondicion");
+	const selModelo = container.querySelector("#selModelo");
+	const inputStock = container.querySelector("#inputStock");
+	const preview = container.querySelector("#skuPreview");
+	const errorMsg = container.querySelector("#errorMsg");
 
-  /**
-   * Actualiza el dropdown de modelos basado en la marca seleccionada.
-   */
-  function updateModelsDropdown() {
-    const brandCode = selMarca.value;
-    selModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
+	/**
+	 * Actualiza el dropdown de modelos basado en la marca seleccionada.
+	 */
+	function updateModelsDropdown() {
+		const brandCode = selMarca.value;
+		selModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
 
-    if (!brandCode) {
-      selModelo.innerHTML = '<option value="">Seleccionar marca primero...</option>';
-      return;
-    }
+		if (!brandCode) {
+			selModelo.innerHTML =
+				'<option value="">Seleccionar marca primero...</option>';
+			return;
+		}
 
-    // Filtrar modelos vinculados a la marca (usando marcaCodigo inferido en db.js)
-    const filtered = allModelos.filter(m => m.marcaCodigo === brandCode);
+		// Filtrar modelos vinculados a la marca (usando marcaCodigo inferido en db.js)
+		const filtered = allModelos.filter((m) => m.marcaCodigo === brandCode);
 
-    if (filtered.length === 0) {
-      // Si no hay modelos detectados para esa marca, mostrar una opción genérica o todos
-      selModelo.innerHTML += '<option value="">Sin modelos vinculados</option>';
-    }
+		if (filtered.length === 0) {
+			// Si no hay modelos detectados para esa marca, mostrar una opción genérica o todos
+			selModelo.innerHTML += '<option value="">Sin modelos vinculados</option>';
+		}
 
-    filtered.forEach(m => {
-      const option = document.createElement('option');
-      option.value = m.modeloId;
-      option.textContent = `${m.modeloId} — ${m.nombre}`;
-      selModelo.appendChild(option);
-    });
+		filtered.forEach((m) => {
+			const option = document.createElement("option");
+			option.value = m.modeloId;
+			option.textContent = `${m.modeloId} — ${m.nombre}`;
+			selModelo.appendChild(option);
+		});
 
-    updatePreview();
-  }
+		updatePreview();
+	}
 
-  function updatePreview() {
-    const cat = selCategoria.value || '___';
-    const mar = selMarca.value || '___';
-    const est = selEstado.value || '__';
-    const con = selCondicion.value || '___';
-    const mod = selModelo.value || '____';
-    preview.textContent = `${cat}${mar}${est}${con}${mod}`;
+	function updatePreview() {
+		const cat = selCategoria.value || "___";
+		const mar = selMarca.value || "___";
+		const est = selEstado.value || "__";
+		const con = selCondicion.value || "___";
+		const mod = selModelo.value || "____";
+		preview.textContent = `${cat}${mar}${est}${con}${mod}`;
 
-    if (cat !== '___' && mar !== '___' && mod !== '___') {
-      preview.style.borderColor = 'var(--accent)';
-    } else {
-      preview.style.borderColor = 'rgba(255,255,255,0.1)';
-    }
-  }
+		if (cat !== "___" && mar !== "___" && mod !== "___") {
+			preview.style.borderColor = "var(--accent)";
+		} else {
+			preview.style.borderColor = "rgba(255,255,255,0.1)";
+		}
+	}
 
-  // Listeners para reactividad
-  selMarca.addEventListener('change', updateModelsDropdown);
+	// Listeners para reactividad
+	selMarca.addEventListener("change", updateModelsDropdown);
 
-  [selCategoria, selEstado, selCondicion, selModelo].forEach(el => {
-    el.addEventListener('change', updatePreview);
-  });
+	[selCategoria, selEstado, selCondicion, selModelo].forEach((el) => {
+		el.addEventListener("change", updatePreview);
+	});
 
-  container.querySelector('#btnGuardar').addEventListener('click', async () => {
-    errorMsg.style.display = 'none';
+	container.querySelector("#btnGuardar").addEventListener("click", async () => {
+		errorMsg.style.display = "none";
 
-    try {
-      const sku = generateSKU({
-        categoria: selCategoria.value,
-        marca: selMarca.value,
-        estado: selEstado.value,
-        condicion: selCondicion.value,
-        modeloId: selModelo.value
-      });
+		try {
+			const sku = generateSKU({
+				categoria: selCategoria.value,
+				marca: selMarca.value,
+				estado: selEstado.value,
+				condicion: selCondicion.value,
+				modeloId: selModelo.value,
+			});
 
-      const exists = await db.productos.get(sku);
-      if (exists) {
-        errorMsg.textContent = `⚠️ SKU ya existe: ${sku}. El producto ya está registrado.`;
-        errorMsg.style.display = 'block';
-        return;
-      }
+			const exists = await db.productos.get(sku);
+			if (exists) {
+				errorMsg.textContent = `⚠️ SKU ya existe: ${sku}. El producto ya está registrado.`;
+				errorMsg.style.display = "block";
+				return;
+			}
 
-      // Obtener el nombre del modelo y la marca para el campo 'modelo' denormalizado
-      const modeloObj = allModelos.find(m => m.modeloId === selModelo.value);
-      const marcaObj = marcas.find(m => m.codigo === selMarca.value);
-      const modeloNombre = modeloObj && marcaObj ? `${marcaObj.nombre} ${modeloObj.nombre}` : 'Modelo desconocido';
-      const stock = parseInt(inputStock.value) || 1;
+			// Obtener el nombre del modelo y la marca para el campo 'modelo' denormalizado
+			const modeloObj = allModelos.find((m) => m.modeloId === selModelo.value);
+			const marcaObj = marcas.find((m) => m.codigo === selMarca.value);
+			const modeloNombre =
+				modeloObj && marcaObj
+					? `${marcaObj.nombre} ${modeloObj.nombre}`
+					: "Modelo desconocido";
+			const stock = parseInt(inputStock.value) || 1;
 
-      await db.productos.add({
-        sku,
-        modelo: modeloNombre,
-        categoria: selCategoria.value,
-        marca: selMarca.value,
-        estado: selEstado.value,
-        condicion: selCondicion.value,
-        modeloId: selModelo.value,
-        detalle: container.querySelector('#selCategoria option:checked')?.textContent.split('—')[1]?.trim() || '',
-        compatibilidad: '[N/A]',
-        stock,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
+			await db.productos.add({
+				sku,
+				modelo: modeloNombre,
+				categoria: selCategoria.value,
+				marca: selMarca.value,
+				estado: selEstado.value,
+				condicion: selCondicion.value,
+				modeloId: selModelo.value,
+				detalle:
+					container
+						.querySelector("#selCategoria option:checked")
+						?.textContent.split("—")[1]
+						?.trim() || "",
+				compatibilidad: "[N/A]",
+				stock,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			});
 
-      // Registrar movimiento inicial si hay stock
-      if (stock > 0) {
-        await db.movimientos.add({
-          sku,
-          tipo: 'entrada',
-          cantidad: stock,
-          stockAnterior: 0,
-          stockNuevo: stock,
-          timestamp: new Date().toISOString(),
-          nota: 'Carga inicial de producto'
-        });
-      }
+			// Registrar movimiento inicial si hay stock
+			if (stock > 0) {
+				await db.movimientos.add({
+					sku,
+					tipo: "entrada",
+					cantidad: stock,
+					stockAnterior: 0,
+					stockNuevo: stock,
+					timestamp: new Date().toISOString(),
+					nota: "Carga inicial de producto",
+				});
+			}
 
-      showToast(`✅ Producto guardado: ${sku}`, 'success');
-      window.location.hash = `/producto/${sku}`;
-    } catch (e) {
-      errorMsg.textContent = `❌ ${e.message}`;
-      errorMsg.style.display = 'block';
-    }
-  });
+			showToast(`✅ Producto guardado: ${sku}`, "success");
+			window.location.hash = `/producto/${sku}`;
+		} catch (e) {
+			errorMsg.textContent = `❌ ${e.message}`;
+			errorMsg.style.display = "block";
+		}
+	});
 }

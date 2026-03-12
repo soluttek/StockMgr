@@ -1,19 +1,42 @@
-# Equipo de Especialistas (StockMgr) 🤖
+# 🤖 Equipo de Especialistas: StockMgr (Matriz 27/27)
 
-Con la reciente actualización de la biblioteca a 930 skills, tienes a tu disposición un equipo de desarrollo de élite. Aquí están los perfiles clave para la reconstrucción de la PWA que puedes invocar en tus prompts.
 
-## 🏗️ Arquitectura y Datos
-- **`cto-orchestrator`**: Invocalo cuando necesites tomar decisiones grandes (Ej: *"¿Deberíamos usar React context o un store como Pinia/Zustand para el inventario?"*).
-- **`database-architect` / `supabase-specialist`**: Tus expertos en Base de Datos. Úsalos para diseñar las tablas de Supabase, las políticas RLS y ejecutar la migración ("Dry-Run").
-- **`vulnerability-scanner`**: Úsalo al final de cada sprint para escanear el código nuevo en busca de inyecciones o fallos de seguridad (OWASP).
+---
 
-## 💻 Desarrollo Base (TypeScript)
-- **`typescript-expert`**: Crucial para la Fase 3. Invocalo con: *"Ayúdame a migrar `db.js` a TypeScript definiendo interfaces estrictas para Marcas y Modelos"*.
-- **`javascript-mastery` / `clean-code`**: Para refactorizar las lógicas complejas de Vanilla JS antes de pasarlas a TS.
+## 🏛️ 1. Departamento de Dirección y Arquitectura (CTO Office)
+- **`cto-orchestrator`**: Toma de decisiones estratégicas y arquitectónicas globales.
+- **`ai-engineer`**: Optimización del flujo de trabajo entre la IA y el código.
+- **`c4-architecture`**: Generación de diagramas técnicos de alto nivel.
+- **`production-audit` / `project-auditor`**: Escaneo de grado corporativo antes de despliegue.
 
-## 🎨 UI/UX y Accesibilidad (PWA)
-- **`ui-ux-pro-max`**: Pídele que diseñe componentes estéticamente premium y ergonómicos ("Thumb Zone" para uso en almacén).
-- **`accessibility-compliance-accessibility-audit`**: Invocalo para evaluar el contraste y el soporte táctil de la nueva UI.
-- **`frontend-design`**: Especializado en convertir ideas genéricas en interfaces de grado productivo.
+## 🗄️ 2. Departamento de Datos (DNA Supabase & DB)
+- **`supabase-specialist`**: Configuración de Supabase (Auth, RLS, Functions).
+- **`database-architect`**: Diseño relacional y diagramas ER.
+- **`supabase-postgres-best-practices`**: Optimización y seguridad en PostgreSQL.
+- **`db-migration`**: Migración de datos desde IndexedDB/Dexie.
+- **`prisma-expert`**: Si decidimos usar un ORM moderno en el backend.
 
-> **💡 Tip de Invocación:** No necesitas usar comandos raros. Simplemente dime: *"Actúa como el `typescript-expert` y ayúdame a tipar esta función"* o *"Pásale este código al `vulnerability-scanner`"*.
+## 💻 3. Departamento de Compilación y Core (TS & Development)
+- **`typescript-expert`**: Líder de la migración de `.js` a `.ts` con tipado estricto.
+- **`senior-developer` / `javascript-pro`**: Desarrollo de lógica de negocio y patrones SOLID.
+- **`vite-pwa-expert`**: Motor del Service Worker y configuración de Vite PWA.
+- **`coding-standards` / `clean-code`**: Guardianes de la legibilidad y estándares Pro.
+- **`python-pro` / `java-pro`**: Especialistas de apoyo si necesitamos puentes con otros lenguajes.
+
+## 🎨 4. Departamento de UI/UX (Frontend & Design)
+- **`vue-patterns`**: Master en Composition API, Pinia y Vue Router.
+- **`ui-ux-pro-max`**: Diseño estético premium enfocado en ergonomía táctil.
+- **`frontend-design`**: Conversión de diseños en componentes reutilizables.
+
+## 🛡️ 5. Departamento de Calidad y DevOps (QA & Ops)
+- **`security-hardening`**: Blindaje de políticas RLS y protección de rutas.
+- **`testing-patterns` / `testing-playwright`**: Suite de tests unitarios y E2E.
+- **`github-actions`**: Automatización de CI/CD (linting, tests, build).
+- **`committer`**: Gestión profesional de mensajes de commit (Conventional Commits).
+
+---
+
+> **💡 Manual de Co-Pilot:**
+> Tienes a los 27 agentes en "stand-by". No necesitas memorizar sus nombres, solo el departamento. Di: *"Necesito el apoyo del departamento de Calidad"* y los agentes de Seguridad y Testing se activarán en conjunto.
+
+*Última auditoría de Matrix: 2026-03-11 (Skills detectadas: 27/27)*

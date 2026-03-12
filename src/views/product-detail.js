@@ -1,13 +1,13 @@
-import db, { registrarMovimiento } from '../data/db.js';
-import { parseSKU } from '../modules/sku-engine.js';
-import { getStockLevel } from '../modules/alerts.js';
-import { showToast, showCustomModal } from '../utils/dom.js';
+import db, { registrarMovimiento } from "../data/db.js";
+import { getStockLevel } from "../modules/alerts.js";
+import { parseSKU } from "../modules/sku-engine.js";
+import { showCustomModal, showToast } from "../utils/dom.js";
 
 export default async function renderProductDetail(container, sku) {
-  const producto = await db.productos.get(sku);
+	const producto = await db.productos.get(sku);
 
-  if (!producto) {
-    container.innerHTML = `
+	if (!producto) {
+		container.innerHTML = `
       <button class="back-btn" onclick="history.back()">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="15 18 9 12 15 6"/>
@@ -18,13 +18,13 @@ export default async function renderProductDetail(container, sku) {
         <p>Producto no encontrado: ${sku}</p>
       </div>
     `;
-    return;
-  }
+		return;
+	}
 
-  const parsed = parseSKU(sku);
-  const level = getStockLevel(producto.stock);
+	const parsed = parseSKU(sku);
+	const level = getStockLevel(producto.stock);
 
-  container.innerHTML = `
+	container.innerHTML = `
     <button class="back-btn" id="backBtn">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="15 18 9 12 15 6"/>
@@ -97,11 +97,11 @@ export default async function renderProductDetail(container, sku) {
       <div class="card detail-info-card">
         <div class="info-row">
           <span class="info-label">Pieza:</span>
-          <span class="info-value">${producto.detalle || 'N/A'}</span>
+          <span class="info-value">${producto.detalle || "N/A"}</span>
         </div>
         <div class="info-row mt-2">
           <span class="info-label">Compatibilidad:</span>
-          <span class="info-value">${producto.compatibilidad || 'N/A'}</span>
+          <span class="info-value">${producto.compatibilidad || "N/A"}</span>
         </div>
         <div class="info-row mt-3 pt-3 border-top">
            <span class="info-label">Interno:</span>
@@ -116,114 +116,130 @@ export default async function renderProductDetail(container, sku) {
     </div>
   `;
 
-  const stockDisplay = container.querySelector('#currentStockDisplay');
-  const inputQty = container.querySelector('#inputAdjustQty');
+	const stockDisplay = container.querySelector("#currentStockDisplay");
+	const inputQty = container.querySelector("#inputAdjustQty");
 
-  container.querySelector('#backBtn').addEventListener('click', () => history.back());
+	container
+		.querySelector("#backBtn")
+		.addEventListener("click", () => history.back());
 
-  container.querySelector('#btnStepPlus').addEventListener('click', () => {
-    inputQty.value = parseInt(inputQty.value) + 1;
-  });
+	container.querySelector("#btnStepPlus").addEventListener("click", () => {
+		inputQty.value = parseInt(inputQty.value) + 1;
+	});
 
-  container.querySelector('#btnStepMinus').addEventListener('click', () => {
-    inputQty.value = Math.max(1, parseInt(inputQty.value) - 1);
-  });
+	container.querySelector("#btnStepMinus").addEventListener("click", () => {
+		inputQty.value = Math.max(1, parseInt(inputQty.value) - 1);
+	});
 
-  container.querySelector('#btnConfirmEntrada').addEventListener('click', async () => {
-    const qty = parseInt(inputQty.value) || 0;
-    if (qty <= 0) return;
+	container
+		.querySelector("#btnConfirmEntrada")
+		.addEventListener("click", async () => {
+			const qty = parseInt(inputQty.value) || 0;
+			if (qty <= 0) return;
 
-    const confirmed = await showCustomModal({
-      title: 'Confirmar Ingreso',
-      message: `¿Deseas AGREGAR ${qty} unidades al stock de ${producto.modelo}?`,
-      confirmText: 'Confirmar Ingreso',
-      cancelText: 'Cancelar'
-    });
+			const confirmed = await showCustomModal({
+				title: "Confirmar Ingreso",
+				message: `¿Deseas AGREGAR ${qty} unidades al stock de ${producto.modelo}?`,
+				confirmText: "Confirmar Ingreso",
+				cancelText: "Cancelar",
+			});
 
-    if (confirmed) {
-      try {
-        const newStock = await registrarMovimiento(sku, 'entrada', qty);
-        updateStockDisplay(stockDisplay, newStock);
-        showToast(`✅ +${qty} unidades agregadas`, 'success');
-        await loadMovimientos(container.querySelector('#movimientos'), sku);
-        inputQty.value = 1;
-      } catch (e) {
-        showToast(e.message, 'error');
-      }
-    }
-  });
+			if (confirmed) {
+				try {
+					const newStock = await registrarMovimiento(sku, "entrada", qty);
+					updateStockDisplay(stockDisplay, newStock);
+					showToast(`✅ +${qty} unidades agregadas`, "success");
+					await loadMovimientos(container.querySelector("#movimientos"), sku);
+					inputQty.value = 1;
+				} catch (e) {
+					showToast(e.message, "error");
+				}
+			}
+		});
 
-  container.querySelector('#btnConfirmSalida').addEventListener('click', async () => {
-    const qty = parseInt(inputQty.value) || 0;
-    if (qty <= 0) return;
+	container
+		.querySelector("#btnConfirmSalida")
+		.addEventListener("click", async () => {
+			const qty = parseInt(inputQty.value) || 0;
+			if (qty <= 0) return;
 
-    const currentProduct = await db.productos.get(sku);
-    if (currentProduct.stock < qty) {
-      return showToast(`Stock insuficiente. Solo hay ${currentProduct.stock} disponibles.`, 'error');
-    }
+			const currentProduct = await db.productos.get(sku);
+			if (currentProduct.stock < qty) {
+				return showToast(
+					`Stock insuficiente. Solo hay ${currentProduct.stock} disponibles.`,
+					"error",
+				);
+			}
 
-    const confirmed = await showCustomModal({
-      title: 'Confirmar Salida',
-      message: `¿Deseas RETIRAR ${qty} unidades del stock de ${producto.modelo}?`,
-      confirmText: 'Confirmar Retiro',
-      cancelText: 'Cancelar'
-    });
+			const confirmed = await showCustomModal({
+				title: "Confirmar Salida",
+				message: `¿Deseas RETIRAR ${qty} unidades del stock de ${producto.modelo}?`,
+				confirmText: "Confirmar Retiro",
+				cancelText: "Cancelar",
+			});
 
-    if (confirmed) {
-      try {
-        const newStock = await registrarMovimiento(sku, 'salida', qty);
-        updateStockDisplay(stockDisplay, newStock);
-        showToast(`✅ -${qty} unidades retiradas`, 'info');
-        await loadMovimientos(container.querySelector('#movimientos'), sku);
-        inputQty.value = 1;
-      } catch (e) {
-        showToast(e.message, 'error');
-      }
-    }
-  });
+			if (confirmed) {
+				try {
+					const newStock = await registrarMovimiento(sku, "salida", qty);
+					updateStockDisplay(stockDisplay, newStock);
+					showToast(`✅ -${qty} unidades retiradas`, "info");
+					await loadMovimientos(container.querySelector("#movimientos"), sku);
+					inputQty.value = 1;
+				} catch (e) {
+					showToast(e.message, "error");
+				}
+			}
+		});
 
-  await loadMovimientos(container.querySelector('#movimientos'), sku);
+	await loadMovimientos(container.querySelector("#movimientos"), sku);
 }
 
 function updateStockDisplay(el, stock) {
-  el.textContent = stock;
-  const level = getStockLevel(stock);
-  const badge = el.closest('.current-stock-badge');
-  if (badge) {
-    badge.className = `current-stock-badge stock-badge--${level}`;
-  }
+	el.textContent = stock;
+	const level = getStockLevel(stock);
+	const badge = el.closest(".current-stock-badge");
+	if (badge) {
+		badge.className = `current-stock-badge stock-badge--${level}`;
+	}
 }
 
 async function loadMovimientos(container, sku) {
-  const movimientos = await db.movimientos
-    .where('sku').equals(sku)
-    .reverse()
-    .limit(10)
-    .toArray();
+	const movimientos = await db.movimientos
+		.where("sku")
+		.equals(sku)
+		.reverse()
+		.limit(10)
+		.toArray();
 
-  if (movimientos.length === 0) {
-    container.innerHTML = '<p class="text-muted" style="font-size:var(--fs-sm);padding:var(--sp-3)">Sin movimientos registrados</p>';
-    return;
-  }
+	if (movimientos.length === 0) {
+		container.innerHTML =
+			'<p class="text-muted" style="font-size:var(--fs-sm);padding:var(--sp-3)">Sin movimientos registrados</p>';
+		return;
+	}
 
-  container.innerHTML = '';
-  for (const m of movimientos) {
-    const isEntrada = m.tipo === 'entrada';
-    const date = new Date(m.timestamp);
-    const timeStr = date.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+	container.innerHTML = "";
+	for (const m of movimientos) {
+		const isEntrada = m.tipo === "entrada";
+		const date = new Date(m.timestamp);
+		const timeStr = date.toLocaleDateString("es-MX", {
+			day: "2-digit",
+			month: "short",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
 
-    container.innerHTML += `
+		container.innerHTML += `
       <div class="product-item">
         <div class="product-item__info">
-          <div class="product-item__name" style="color:${isEntrada ? 'var(--entrada)' : 'var(--salida)'}">
-            ${isEntrada ? '↑ Entrada' : '↓ Salida'} ×${m.cantidad}
+          <div class="product-item__name" style="color:${isEntrada ? "var(--entrada)" : "var(--salida)"}">
+            ${isEntrada ? "↑ Entrada" : "↓ Salida"} ×${m.cantidad}
           </div>
           <div class="product-item__sku">${timeStr}</div>
         </div>
         <div class="stock-badge" style="font-size:var(--fs-xs);color:var(--text-muted)">
-          ${m.stockAnterior ?? '?'} → ${m.stockNuevo ?? '?'}
+          ${m.stockAnterior ?? "?"} → ${m.stockNuevo ?? "?"}
         </div>
       </div>
     `;
-  }
+	}
 }
