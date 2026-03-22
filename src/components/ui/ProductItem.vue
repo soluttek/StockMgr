@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Product } from '@/types'
+import type { EnrichedProduct } from '@/types'
 import { computed } from 'vue'
 
 const props = defineProps<{
-  product: Product & { current_stock?: number, reorder_point?: number }
+  product: EnrichedProduct
   brandName?: string
 }>()
 

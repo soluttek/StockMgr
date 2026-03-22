@@ -11,6 +11,10 @@ export type Brand = Tables['brands']['Row'];
 export type Category = Tables['categories']['Row'];
 export type DeviceModel = Tables['device_models']['Row'];
 export type Product = Tables['products']['Row'];
+export type EnrichedProduct = Product & { 
+  current_stock?: number;
+  reorder_point?: number;
+};
 export type ProductCompatibility = Tables['product_compatibilities']['Row'];
 export type QualityGrade = Product['quality_grade'];
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Html5QrcodeScanner } from 'html5-qrcode'
+import type { Html5QrcodeScanner } from 'html5-qrcode'
 import { useCatalogStore } from '@/stores/useCatalogStore'
 import { useStockStore } from '@/stores/useStockStore'
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -86,7 +86,9 @@ const handleQuickAdjust = async (type: 'IN' | 'OUT') => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const { Html5QrcodeScanner } = await import('html5-qrcode')
+  
   scanner.value = new Html5QrcodeScanner(
     "reader",
     { 
