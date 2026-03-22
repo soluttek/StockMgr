@@ -51,6 +51,12 @@ const routes = [
     name: 'Movements',
     component: () => import('@/views/MovementsView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/agregar',
+    name: 'AddProduct',
+    component: () => import('@/views/AddProductView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

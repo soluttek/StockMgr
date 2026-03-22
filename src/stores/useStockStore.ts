@@ -9,7 +9,9 @@ export const useStockStore = defineStore('stock', () => {
   
   // En el futuro, aquí manejaremos la 'Cola de transacciones offline (outbox)' para sincronizar a supabase con Background Sync API
 
-  async function fetchInventory() {
+  async function fetchInventory(force = false) {
+    if (!force && inventory.value.length > 0) return
+
     console.log('📦 Obteniendo inventario...')
     const { data, error } = await supabase.from('inventory').select('*')
     if (error) {

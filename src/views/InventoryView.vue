@@ -80,7 +80,7 @@ onMounted(async () => {
       <div class="error-icon">⚠️</div>
       <p>Error de conexión</p>
       <small>{{ catalog.error }}</small>
-      <button @click="catalog.fetchCatalog" class="btn-retry">Reintentar</button>
+      <button @click="catalog.fetchCatalog(true)" class="btn-retry">Reintentar</button>
     </div>
 
     <div v-else class="product-list">

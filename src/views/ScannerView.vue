@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useCatalogStore } from '@/stores/useCatalogStore'
 import { useStockStore } from '@/stores/useStockStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 import ProductItem from '@/components/ui/ProductItem.vue'
 import type { Product } from '@/types'
 
@@ -42,6 +43,47 @@ const onScanError = (err: any) => {
 const resetScanner = () => {
   scannedResult.value = null
   detectedProduct.value = null
+}
+
+const handleQuickAdjust = async (type: 'IN' | 'OUT') => {
+  if (!detectedProduct.value || isProcessing.value) return
+  
+  const auth = useAuthStore()
+  if (!auth.user) {
+    alert('Debes iniciar sesión para realizar ajustes')
+    return
+  }
+
+  isProcessing.value = true
+  const quantity = type === 'IN' ? 1 : -1
+  
+  try {
+    // Buscar warehouse_id: intentamos encontrar donde ya existe el producto, o usamos el primero del catálogo
+    const stockItem = stock.inventory.find(i => i.product_id === detectedProduct.value!.id)
+    const warehouseId = stockItem?.warehouse_id || catalog.warehouses[0]?.id
+
+    if (!warehouseId) {
+      throw new Error('No hay almacenes configurados')
+    }
+
+    await stock.registerMovement({
+      product_id: detectedProduct.value!.id,
+      quantity_change: quantity,
+      user_id: auth.user.id,
+      warehouse_id: warehouseId,
+      client_mutation_id: crypto.randomUUID(),
+      reason: `Ajuste rápido (${type}) desde Escáner`,
+      status: 'completed'
+    })
+
+    if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100])
+    
+  } catch (err: any) {
+    console.error('Adjustment error:', err)
+    alert(`Error: ${err.message || 'No se pudo realizar el ajuste'}`)
+  } finally {
+    isProcessing.value = false
+  }
 }
 
 onMounted(() => {
@@ -98,8 +140,20 @@ onUnmounted(() => {
           />
           
           <div class="quick-stock-actions">
-            <button class="btn btn-entrada">+ Entrada</button>
-            <button class="btn btn-salida">- Salida</button>
+            <button 
+              @click="handleQuickAdjust('IN')" 
+              :disabled="isProcessing"
+              class="btn btn-entrada"
+            >
+              + Entrada
+            </button>
+            <button 
+              @click="handleQuickAdjust('OUT')" 
+              :disabled="isProcessing"
+              class="btn btn-salida"
+            >
+              - Salida
+            </button>
           </div>
         </div>
 

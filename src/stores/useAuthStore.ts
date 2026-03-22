@@ -9,6 +9,8 @@ export const useAuthStore = defineStore('auth', () => {
   const role = ref<Role | null>(null)
   const isInitializing = ref(true)
 
+  let initPromise: Promise<void> | null = null
+
   async function fetchUserRole(userId: string): Promise<Role | null> {
     try {
       const { data, error } = await supabase
@@ -29,21 +31,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function initialize() {
-    isInitializing.value = true
-    const { data: { session } } = await supabase.auth.getSession()
-    
-    if (session?.user) {
-      user.value = session.user
-      role.value = await fetchUserRole(session.user.id)
-    } else {
-      user.value = null
-      role.value = null
-    }
-    
-    isInitializing.value = false
+    if (initPromise) return initPromise
 
-    // Listen for auth changes
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    initPromise = (async () => {
+      isInitializing.value = true
+      console.log('🔐 Inicializando Auth State...')
+      
+      const { data: { session } } = await supabase.auth.getSession()
+      
       if (session?.user) {
         user.value = session.user
         role.value = await fetchUserRole(session.user.id)
@@ -51,7 +46,23 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = null
         role.value = null
       }
-    })
+      
+      isInitializing.value = false
+
+      // Listen for auth changes (solo una vez)
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log('🔄 Auth State Change:', event)
+        if (session?.user) {
+          user.value = session.user
+          role.value = await fetchUserRole(session.user.id)
+        } else {
+          user.value = null
+          role.value = null
+        }
+      })
+    })()
+
+    return initPromise
   }
 
   async function signOut() {
