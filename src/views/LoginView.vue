@@ -9,7 +9,31 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const router = useRouter()
 
+// Rate Limiting Logic
+const attempts = ref(0)
+const MAX_ATTEMPTS = 5
+const cooldownSeconds = ref(0)
+let cooldownTimer: number | null = null
+
+function startCooldown() {
+  cooldownSeconds.value = 30
+  if (cooldownTimer) clearInterval(cooldownTimer)
+  
+  cooldownTimer = window.setInterval(() => {
+    cooldownSeconds.value--
+    if (cooldownSeconds.value <= 0) {
+      if (cooldownTimer) clearInterval(cooldownTimer)
+      attempts.value = 0
+    }
+  }, 1000)
+}
+
 async function handleLogin() {
+  if (attempts.value >= MAX_ATTEMPTS) {
+    errorMessage.value = `Demasiados intentos. Espera ${cooldownSeconds.value}s.`
+    return
+  }
+
   isLoading.value = true
   errorMessage.value = ''
   
@@ -19,8 +43,14 @@ async function handleLogin() {
   })
 
   if (error) {
+    attempts.value++
     errorMessage.value = error.message
+    
+    if (attempts.value >= MAX_ATTEMPTS) {
+      startCooldown()
+    }
   } else {
+    attempts.value = 0
     router.push('/')
   }
   isLoading.value = false
@@ -43,8 +73,8 @@ async function handleLogin() {
           <input v-model="password" type="password" required placeholder="••••••••">
         </div>
         <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
-        <button type="submit" :disabled="isLoading" class="btn-login">
-          {{ isLoading ? 'Entrando...' : 'Iniciar Sesión' }}
+        <button type="submit" :disabled="isLoading || cooldownSeconds > 0" class="btn-login">
+          {{ isLoading ? 'Entrando...' : (cooldownSeconds > 0 ? `Espera ${cooldownSeconds}s` : 'Iniciar Sesión') }}
         </button>
       </form>
     </div>
