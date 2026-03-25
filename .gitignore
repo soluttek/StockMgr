@@ -30,3 +30,5 @@ yarn-error.log*
 .agent/
 .gemini/
 sw.js.map
+.vercel
+.env*.local
