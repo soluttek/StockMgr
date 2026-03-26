@@ -53,6 +53,11 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/soporte',
+    name: 'support',
+    component: () => import('../views/SupportView.vue')
+  },
+  {
     path: '/agregar',
     name: 'AddProduct',
     component: () => import('@/views/AddProductView.vue'),

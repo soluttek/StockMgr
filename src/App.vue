@@ -43,11 +43,11 @@ onUnmounted(() => {
       </div>
     </header>
 
-    <div v-if="!auth.user && $route.path !== '/login'" class="security-banner">
+    <div v-if="!auth.user && $route.path !== '/login' && $route.path !== '/soporte'" class="security-banner">
       <span class="icon">🛡️</span>
       <p>
-        <strong>Navegación Protegida:</strong> Los datos se muestran vacíos porque no hay una sesión activa. Supabase (RLS) bloquea los registros por seguridad.<br>
-        Si tiene alguna duda o problema, contacte con <router-link to="/soporte" class="support-link">Soporte Técnico</router-link>.
+        <strong>Navegación Protegida:</strong> Los datos se muestran vacíos porque no hay una sesión activa.<br>
+        Si tiene alguna duda o problema, contacte con <router-link to="/soporte" class="support-link-bold">Soporte Técnico</router-link>.
       </p>
     </div>
 
@@ -90,10 +90,10 @@ onUnmounted(() => {
   margin: 0;
 }
 
-.support-link {
-  color: #451a03;
-  text-decoration: underline;
-  font-weight: 700;
+.support-link-bold {
+  color: white;
+  text-decoration: none;
+  font-weight: 800;
 }
 
 /* Transición básica de páginas */
