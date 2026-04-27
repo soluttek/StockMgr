@@ -1,10 +1,35 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/useAuthStore'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const auth = useAuthStore()
+const isOnline = ref(navigator.onLine)
+
+function updateOnlineStatus() {
+  isOnline.value = navigator.onLine
+}
+
+onMounted(() => {
+  window.addEventListener('online', updateOnlineStatus)
+  window.addEventListener('offline', updateOnlineStatus)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('online', updateOnlineStatus)
+  window.removeEventListener('offline', updateOnlineStatus)
+})
 </script>
 
 <template>
+  <!-- Indicador de Red Independiente -->
+  <div 
+    class="network-status" 
+    :class="isOnline ? 'status-online' : 'status-offline'"
+  >
+    <span class="status-dot"></span>
+    {{ isOnline ? 'En Línea' : 'Desconectado (Guardando en local)' }}
+  </div>
+
   <nav class="bottom-nav">
     <router-link to="/" class="bottom-nav__item">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,9 +81,67 @@ const auth = useAuthStore()
 </template>
 
 <style scoped>
+.network-status {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--safe-bottom) - 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 89; /* Justo debajo del nav (90) pero encima del contenido */
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-online {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.status-online .status-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.status-offline {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-top: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.status-offline .status-dot {
+  background-color: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
 .router-link-active {
   color: var(--accent) !important;
 }
-
-/* El FAB hereda los estilos de app.css .fab-scan */
 </style>
+

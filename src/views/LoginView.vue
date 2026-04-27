@@ -114,7 +114,7 @@ async function handleLogin() {
           <input 
             v-model="email" 
             type="email" 
-            placeholder="admin@soluttek.com"
+            placeholder="admin@stockmgr.com"
           >
         </div>
         
