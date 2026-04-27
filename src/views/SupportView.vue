@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -11,7 +11,7 @@ const isSubmitting = ref(false)
 const isSent = ref(false)
 
 // FAQ Accordion State
-const activeFaqIndex = ref<number | null>(null)
+const activeFaqIndex = ref<number | null>(0)
 const searchQuery = ref('')
 
 const faqs = [
@@ -45,6 +45,17 @@ const filteredFaqs = computed(() => {
 const toggleFaq = (index: number) => {
   activeFaqIndex.value = activeFaqIndex.value === index ? null : index
 }
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
+// Watch search to auto-expand first item when cleared
+watch(searchQuery, (newVal) => {
+  if (!newVal) {
+    activeFaqIndex.value = 0
+  }
+})
 
 const isMessageEnabled = computed(() => {
   return subject.value === 'Problemas Técnicos.' || subject.value === 'Otros...'
@@ -170,8 +181,11 @@ function handleBack() {
         <div class="faq-header">
           <h3>Preguntas Frecuentes</h3>
           <div class="search-mini">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input v-model="searchQuery" type="text" placeholder="Buscar ayuda...">
+            <button v-if="searchQuery" class="btn-clear" @click="clearSearch" aria-label="Limpiar búsqueda">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
           </div>
         </div>
         
@@ -433,10 +447,31 @@ textarea:disabled {
   color: var(--text-primary);
   outline: none;
   width: 100%;
+  padding-right: 24px;
 }
 
-.search-mini svg {
+.search-icon {
   color: var(--text-muted);
+}
+
+.btn-clear {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.btn-clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent);
 }
 
 .faq-list {
