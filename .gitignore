@@ -30,3 +30,9 @@ yarn-error.log*
 .agent/
 .gemini/
 sw.js.map
+.vercel
+.env*.local
+
+# Playwright
+playwright-report/
+test-results/
