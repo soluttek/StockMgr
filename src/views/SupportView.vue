@@ -7,119 +7,354 @@ const name = ref('')
 const email = ref('')
 const subject = ref('')
 const message = ref('')
+const isSubmitting = ref(false)
 const isSent = ref(false)
 
 const isMessageEnabled = computed(() => {
   return subject.value === 'Problemas Técnicos.' || subject.value === 'Otros...'
 })
 
-function handleSubmit() {
+async function handleSubmit() {
   if (!subject.value) return
+  isSubmitting.value = true
+  
+  // Simulated API Call
+  await new Promise(resolve => setTimeout(resolve, 1500))
+  
+  isSubmitting.value = false
   isSent.value = true
   setTimeout(() => {
     router.push('/login')
-  }, 3000)
+  }, 4000)
+}
+
+function handleBack() {
+  router.push('/login')
 }
 </script>
 
 <template>
   <div class="support-view">
-    <div class="support-card">
-      <template v-if="!isSent">
-        <h2>Soporte Técnico</h2>
-        <p>Envía tu consulta y nos pondremos en contacto contigo.</p>
-        
-        <form @submit.prevent="handleSubmit" class="support-form">
-          <div class="form-group">
-            <label>NOMBRE COMPLETO</label>
-            <input v-model="name" type="text" required placeholder="Tu nombre">
-          </div>
-          <div class="form-group">
-            <label>EMAIL DE CONTACTO</label>
-            <input v-model="email" type="email" required placeholder="tu@email.com">
-          </div>
-          <div class="form-group">
-            <label>ASUNTO</label>
-            <select v-model="subject" required class="support-select">
-              <option value="" disabled>-- Selecciona una Opción --</option>
-              <option>Olvidó Contraseña.</option>
-              <option>Solicitud de Desbloqueo de Cuenta.</option>
-              <option>Problemas Técnicos.</option>
-              <option>Otros...</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>MENSAJE ({{ message.length }}/500)</label>
-            <textarea 
-              v-model="message" 
-              rows="4" 
-              maxlength="500"
-              :disabled="!isMessageEnabled"
-              :placeholder="isMessageEnabled ? 'Explica tu problema...' : 'Este asunto no requiere mensaje adicional.'"
-              :class="{ 'disabled-area': !isMessageEnabled }"
-            ></textarea>
-          </div>
-          <button type="submit" class="btn-send" :disabled="!subject">Enviar Solicitud</button>
-        </form>
-      </template>
-      
-      <div v-else class="sent-message">
-        <div class="success-icon">✅</div>
-        <h3>Solicitud Enviada</h3>
-        <p>Tu mensaje ha sido recibido. Te redirigiremos al inicio en unos segundos...</p>
+    <header class="app-header">
+      <div class="header-title">
+        <button class="btn-back" @click="handleBack">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <h1>Centro de <span class="accent">Soporte</span></h1>
       </div>
+    </header>
+
+    <div class="view-container">
+      
+      <!-- Quick Contact Actions -->
+      <section class="quick-contact">
+        <a href="tel:+1234567890" class="contact-card urgent">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </div>
+          <div class="contact-info">
+            <h3>Emergencias</h3>
+            <p>Llamar al administrador</p>
+          </div>
+        </a>
+
+        <a href="https://wa.me/1234567890" target="_blank" class="contact-card whatsapp">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <div class="contact-info">
+            <h3>Chat Soporte</h3>
+            <p>Atención vía WhatsApp</p>
+          </div>
+        </a>
+      </section>
+
+      <!-- Ticket Form -->
+      <section class="ticket-section">
+        <div class="section-header">
+          <h2>Reportar Problema</h2>
+          <p>Envíanos un detalle de tu problema para poder ayudarte.</p>
+        </div>
+
+        <div class="card form-container">
+          <template v-if="!isSent">
+            <form @submit.prevent="handleSubmit" class="ticket-form" novalidate>
+              <div class="form-group">
+                <label>NOMBRE COMPLETO</label>
+                <input v-model="name" type="text" required placeholder="Tu nombre">
+              </div>
+              
+              <div class="form-group">
+                <label>EMAIL DE CONTACTO</label>
+                <input v-model="email" type="email" required placeholder="tu@email.com">
+              </div>
+
+              <div class="form-group">
+                <label>ASUNTO</label>
+                <select v-model="subject" required>
+                  <option value="" disabled>-- Selecciona una Opción --</option>
+                  <option>Olvidó Contraseña.</option>
+                  <option>Solicitud de Desbloqueo de Cuenta.</option>
+                  <option>Problemas Técnicos.</option>
+                  <option>Otros...</option>
+                </select>
+              </div>
+
+              <div class="form-group" :class="{ 'disabled-group': !isMessageEnabled }">
+                <label>MENSAJE ({{ message.length }}/500)</label>
+                <textarea 
+                  v-model="message" 
+                  rows="4" 
+                  maxlength="500"
+                  :disabled="!isMessageEnabled"
+                  :placeholder="isMessageEnabled ? 'Explica tu problema detalladamente...' : 'Este asunto no requiere mensaje adicional.'"
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-full" :disabled="isSubmitting || !subject">
+                <span v-if="isSubmitting" class="spinner"></span>
+                <span v-else>Enviar Solicitud</span>
+              </button>
+            </form>
+          </template>
+          
+          <!-- Success Message -->
+          <div v-else class="sent-message">
+            <div class="success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="accent"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <h3>Solicitud Enviada</h3>
+            <p>Tu mensaje ha sido recibido. Te redirigiremos al inicio en unos segundos...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="faq-section">
+        <h3>Preguntas Frecuentes</h3>
+        
+        <div class="faq-list">
+          <div class="faq-item card">
+            <h4>¿Qué hago si no hay internet?</h4>
+            <p>Sigue escaneando normalmente. StockMgr guardará los movimientos de forma local (Offline) y se sincronizará automáticamente en cuanto recupere la conexión.</p>
+          </div>
+          
+          <div class="faq-item card">
+            <h4>La cámara se ve negra o no enfoca</h4>
+            <p>Asegúrate de haber otorgado permisos de cámara en tu navegador. Si el problema persiste, limpia el lente trasero del dispositivo.</p>
+          </div>
+        </div>
+      </section>
+
     </div>
   </div>
 </template>
 
 <style scoped>
 .support-view {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 90vh;
-  padding: 2rem;
+  margin-left: -8px;
+  transition: color var(--duration);
 }
-.support-card {
-  background: var(--bg-secondary);
-  padding: 2.5rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 450px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-h2 { margin-bottom: 0.5rem; color: white; }
-p { color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-size: 0.9rem; }
 
-.form-group { margin-bottom: 1.5rem; }
-label { display: block; font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem; }
-input, select, textarea {
+.btn-back:hover {
+  color: var(--accent);
+}
+
+.quick-contact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+
+.contact-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--duration), border-color var(--duration);
+}
+
+.contact-card:active {
+  transform: scale(0.96);
+}
+
+.contact-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--sp-3);
+}
+
+.urgent {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.urgent .contact-icon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.whatsapp {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+.whatsapp .contact-icon {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.contact-info h3 {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.contact-info p {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.section-header {
+  margin-bottom: var(--sp-4);
+}
+
+.section-header h2 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-header p {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.form-container {
+  margin-bottom: var(--sp-8);
+}
+
+.disabled-group label {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+textarea {
   width: 100%;
-  padding: 0.8rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  color: white;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-input);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
   font-family: inherit;
+  font-size: var(--fs-base);
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  transition: border-color var(--duration);
 }
-select option {
-  background: #1a1f26;
-  color: white;
+
+textarea:focus {
+  border-color: var(--accent);
 }
-.disabled-area {
+
+textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   background: rgba(0,0,0,0.2);
 }
-.btn-send {
-  width: 100%;
-  padding: 1rem;
+
+.btn-primary {
   background: var(--accent);
+  color: var(--bg-primary);
   border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
+  width: 100%;
+  margin-top: var(--sp-2);
 }
-.sent-message { text-align: center; }
-.success-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--bg-primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.sent-message {
+  text-align: center;
+  padding: var(--sp-6) 0;
+}
+
+.success-icon {
+  margin-bottom: var(--sp-4);
+  display: flex;
+  justify-content: center;
+}
+
+.sent-message h3 {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin-bottom: var(--sp-2);
+}
+
+.sent-message p {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.faq-section h3 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  margin-bottom: var(--sp-4);
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.faq-item h4 {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+
+.faq-item p {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
 </style>

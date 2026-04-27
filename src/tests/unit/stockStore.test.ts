@@ -73,14 +73,15 @@ describe('Stock Store', () => {
 
   it('registerMovement debe guardar en outbox y actualizar UI inmediatamente (Optimistic UI)', async () => {
     const store = useStockStore()
-    store.inventory = [{ product_id: 'P1', warehouse_id: 'W1', quantity: 10 }]
+    store.inventory = [{ product_id: 'P1', warehouse_id: 'W1', quantity: 10 } as any]
     
     const movement = {
       product_id: 'P1',
       warehouse_id: 'W1',
       quantity_change: -2,
-      user_id: 'user1'
-    }
+      user_id: 'user1',
+      client_mutation_id: 'mut1'
+    } as any
 
     await store.registerMovement(movement)
 
@@ -98,12 +99,12 @@ describe('Stock Store', () => {
       client_mutation_id: 'mut1',
       user_id: 'user1',
       status: 'PENDING'
-    }
+    } as any
 
     // Mock chaining: localDb.outbox.where('status').equals('PENDING').toArray()
-    vi.mocked(localDb.outbox.where).mockReturnThis();
-    vi.mocked(localDb.outbox.equals).mockReturnThis();
-    vi.mocked(localDb.outbox.toArray).mockResolvedValue([pendingMov]);
+    vi.mocked(localDb.outbox.where as any).mockReturnThis();
+    vi.mocked((localDb.outbox as any).equals as any).mockReturnThis();
+    vi.mocked((localDb.outbox as any).toArray as any).mockResolvedValue([pendingMov]);
 
     vi.mocked(supabase.rpc).mockResolvedValue({ data: { status: 'OK' }, error: null } as any)
 
