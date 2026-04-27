@@ -66,18 +66,19 @@ export const useStockStore = defineStore('stock', () => {
     for (const mov of pendingMovements) {
       try {
         // Enviar a Supabase mediante el RPC de resolución de conflictos
-        const { data, error } = await (supabase.rpc as any)('process_offline_movement', {
+        const { data, error } = await supabase.rpc('process_offline_movement', {
           p_product_id: mov.product_id,
           p_warehouse_id: mov.warehouse_id,
           p_quantity_change: mov.quantity_change,
-          p_reason: mov.reason || null,
+          p_reason: mov.reason || '',
           p_client_mutation_id: mov.client_mutation_id,
           p_user_id: mov.user_id
         })
         
         if (error) throw error
         
-        if (data && (data as any).status === 'ALREADY_PROCESSED') {
+        const result = data as { status: string } | null
+        if (result && result.status === 'ALREADY_PROCESSED') {
           console.warn('⚠️ Movimiento ya había sido procesado previamente:', mov.client_mutation_id)
         }
 
