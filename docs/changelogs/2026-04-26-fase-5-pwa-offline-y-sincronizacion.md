@@ -31,6 +31,11 @@ Hoy hemos completado los cimientos de la arquitectura **Offline-First** para Sto
     *   🔴 **Desconectado:** Aviso parpadeante de "Guardando en local".
 *   Corrección de placeholder en Login y reseteo de credenciales admin para pruebas.
 
+### 🩹 Hotfixes & Ajustes de Estabilidad
+*   **Corrección de Build (Vercel):** Implementación de *type casting* en `useStockStore.ts` para el llamado al RPC. Esto resuelve el error de compilación en producción causado por el desfase entre los tipos generados de Supabase y las funciones creadas manualmente en SQL.
+*   **Limpieza de Git:** Eliminación del archivo `node_modules/.vite/deps/_metadata.json` del historial de rastreo de Git y refuerzo de su ignorancia para evitar ruidos en el control de código fuente.
+*   **Estabilidad de Layout:** Reversión de la estructura del contenedor en `BottomNav.vue` para restaurar el centrado perfecto de la barra de navegación original, manteniendo el indicador de red como un elemento flotante independiente.
+
 ### 🛠️ Detalles Técnicos
 *   **Rama:** `feat/pwa-offline-sync`
 *   **Tecnologías:** Dexie.js, Supabase RPC, Vite PWA Plugin.
