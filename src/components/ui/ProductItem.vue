@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { EnrichedProduct } from '@/types'
-import { computed } from 'vue'
+import { computed } from "vue";
+import type { EnrichedProduct } from "@/types";
 
 const props = defineProps<{
-  product: EnrichedProduct
-  brandName?: string
-}>()
+	product: EnrichedProduct;
+	brandName?: string;
+}>();
 
 const stockStatus = computed(() => {
-  const stock = props.product.current_stock ?? 0
-  const limit = props.product.reorder_point ?? 5
-  if (stock <= 0) return 'critical'
-  if (stock <= limit) return 'low'
-  return 'ok'
-})
+	const stock = props.product.current_stock ?? 0;
+	const limit = props.product.reorder_point ?? 5;
+	if (stock <= 0) return "critical";
+	if (stock <= limit) return "low";
+	return "ok";
+});
 </script>
 
 <template>

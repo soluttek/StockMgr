@@ -1,119 +1,130 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCatalogStore } from '@/stores/useCatalogStore'
-import { supabase } from '@/lib/supabase'
-import { generateSku, generatePrefix } from '@/utils/skuEngine'
-import type { QualityGrade } from '@/types'
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "@/lib/supabase";
+import { useCatalogStore } from "@/stores/useCatalogStore";
+import type { QualityGrade } from "@/types";
+import { generatePrefix, generateSku } from "@/utils/skuEngine";
 
-const router = useRouter()
-const catalog = useCatalogStore()
+const router = useRouter();
+const catalog = useCatalogStore();
 
-const isSaving = ref(false)
-const errorMsg = ref<string | null>(null)
+const isSaving = ref(false);
+const errorMsg = ref<string | null>(null);
 
 // Form State
 const form = ref({
-  name: '',
-  categoryId: '',
-  brandId: '',
-  state: '01', // 01=Nuevo, 02=Usado
-  condition: 'OEM' as QualityGrade,
-  correlative: '00001' // Se auto calculará
-})
+	name: "",
+	categoryId: "",
+	brandId: "",
+	state: "01", // 01=Nuevo, 02=Usado
+	condition: "OEM" as QualityGrade,
+	correlative: "00001", // Se auto calculará
+});
 
 const states = [
-  { code: '01', name: 'Nuevo' },
-  { code: '02', name: 'Usado' }
-]
+	{ code: "01", name: "Nuevo" },
+	{ code: "02", name: "Usado" },
+];
 
 const conditions = [
-  { value: 'OEM', code: 'OEM' },
-  { value: 'Service Pack', code: 'SVP' },
-  { value: 'Aftermarket', code: 'AFT' },
-  { value: 'Ori', code: 'ORI' },
-  { value: 'Refurbished', code: 'REF' }
-]
+	{ value: "OEM", code: "OEM" },
+	{ value: "Service Pack", code: "SVP" },
+	{ value: "Aftermarket", code: "AFT" },
+	{ value: "Ori", code: "ORI" },
+	{ value: "Refurbished", code: "REF" },
+];
 
-const selectedCategory = computed(() => catalog.categories.find(c => c.id === form.value.categoryId))
-const selectedBrand = computed(() => catalog.brands.find(b => b.id === form.value.brandId))
+const selectedCategory = computed(() =>
+	catalog.categories.find((c) => c.id === form.value.categoryId),
+);
+const selectedBrand = computed(() =>
+	catalog.brands.find((b) => b.id === form.value.brandId),
+);
 
 const generatedSku = computed(() => {
-  if (!selectedCategory.value || !selectedBrand.value) return 'XXX-XXX-XX-XXX-XXXXX'
+	if (!selectedCategory.value || !selectedBrand.value)
+		return "XXX-XXX-XX-XXX-XXXXX";
 
-  const catPrefix = generatePrefix(selectedCategory.value.name)
-  const brandPrefix = generatePrefix(selectedBrand.value.name)
-  const condCode = conditions.find(c => c.value === form.value.condition)?.code || 'XXX'
+	const catPrefix = generatePrefix(selectedCategory.value.name);
+	const brandPrefix = generatePrefix(selectedBrand.value.name);
+	const condCode =
+		conditions.find((c) => c.value === form.value.condition)?.code || "XXX";
 
-  try {
-    return generateSku({
-      category: catPrefix,
-      brand: brandPrefix,
-      state: form.value.state,
-      condition: condCode,
-      correlative: form.value.correlative
-    })
-  } catch (err) {
-    return 'XXX-XXX-XX-XXX-XXXXX'
-  }
-})
+	try {
+		return generateSku({
+			category: catPrefix,
+			brand: brandPrefix,
+			state: form.value.state,
+			condition: condCode,
+			correlative: form.value.correlative,
+		});
+	} catch (err) {
+		return "XXX-XXX-XX-XXX-XXXXX";
+	}
+});
 
 // Auto calculador de correlativo
 const calculateCorrelative = () => {
-  if (!selectedCategory.value || !selectedBrand.value) return '00001'
-  const catPrefix = generatePrefix(selectedCategory.value.name)
-  const brandPrefix = generatePrefix(selectedBrand.value.name)
-  
-  // Contar cuántos productos existen con el mismo prefijo
-  const matching = catalog.products.filter(p => p.sku.startsWith(`${catPrefix}-${brandPrefix}`))
-  const nextNumber = matching.length + 1
-  return String(nextNumber).padStart(5, '0')
-}
+	if (!selectedCategory.value || !selectedBrand.value) return "00001";
+	const catPrefix = generatePrefix(selectedCategory.value.name);
+	const brandPrefix = generatePrefix(selectedBrand.value.name);
+
+	// Contar cuántos productos existen con el mismo prefijo
+	const matching = catalog.products.filter((p) =>
+		p.sku.startsWith(`${catPrefix}-${brandPrefix}`),
+	);
+	const nextNumber = matching.length + 1;
+	return String(nextNumber).padStart(5, "0");
+};
 
 // Al cambiar categoría o marca reseteamos correlativo
 const handleCatBrandChange = () => {
-  form.value.correlative = calculateCorrelative()
-}
+	form.value.correlative = calculateCorrelative();
+};
 
 const saveProduct = async () => {
-  if (!form.value.name || !form.value.categoryId || !form.value.brandId) {
-    errorMsg.value = "Por favor, completa todos los campos requeridos."
-    return
-  }
+	if (!form.value.name || !form.value.categoryId || !form.value.brandId) {
+		errorMsg.value = "Por favor, completa todos los campos requeridos.";
+		return;
+	}
 
-  errorMsg.value = null
-  isSaving.value = true
+	errorMsg.value = null;
+	isSaving.value = true;
 
-  try {
-    const { error } = await supabase.from('products').insert({
-      name: form.value.name,
-      sku: generatedSku.value,
-      category_id: form.value.categoryId,
-      brand_id: form.value.brandId,
-      quality_grade: form.value.condition
-    } as any).select().single()
+	try {
+		const { error } = await supabase
+			.from("products")
+			.insert({
+				name: form.value.name,
+				sku: generatedSku.value,
+				category_id: form.value.categoryId,
+				brand_id: form.value.brandId,
+				quality_grade: form.value.condition,
+			} as any)
+			.select()
+			.single();
 
-    if (error) throw error
+		if (error) throw error;
 
-    // Refrescar el catálogo para incluir el nuevo producto
-    await catalog.fetchCatalog(true)
-    
-    // Ir a la vista de inventario
-    router.push('/inventario')
-    
-  } catch (err: any) {
-    console.error('Error guardando producto:', err)
-    errorMsg.value = err.message || 'Error al guardar el producto.'
-  } finally {
-    isSaving.value = false
-  }
-}
+		// Refrescar el catálogo para incluir el nuevo producto
+		await catalog.fetchCatalog(true);
+
+		// Ir a la vista de inventario
+		router.push("/inventario");
+	} catch (err: any) {
+		console.error("Error guardando producto:", err);
+		errorMsg.value = err.message || "Error al guardar el producto.";
+	} finally {
+		isSaving.value = false;
+	}
+};
 
 onMounted(async () => {
-  if (catalog.categories.length === 0) {
-    await catalog.fetchCatalog()
-  }
-})
+	if (catalog.categories.length === 0) {
+		await catalog.fetchCatalog();
+	}
+});
 </script>
 
 <template>

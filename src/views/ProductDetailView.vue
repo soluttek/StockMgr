@@ -1,22 +1,27 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useCatalogStore } from '@/stores/useCatalogStore'
-import { useStockStore } from '@/stores/useStockStore'
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useCatalogStore } from "@/stores/useCatalogStore";
+import { useStockStore } from "@/stores/useStockStore";
 
-const route = useRoute()
-const router = useRouter()
-const catalog = useCatalogStore()
-const stock = useStockStore()
+const route = useRoute();
+const router = useRouter();
+const catalog = useCatalogStore();
+const stock = useStockStore();
 
-const id = route.params.id as string
+const id = route.params.id as string;
 
-const product = computed(() => catalog.products.find(p => p.id === id))
-const brand = computed(() => catalog.brands.find(b => b.id === product.value?.brand_id))
-const category = computed(() => catalog.categories.find(c => c.id === product.value?.category_id))
+const product = computed(() => catalog.products.find((p) => p.id === id));
+const brand = computed(() =>
+	catalog.brands.find((b) => b.id === product.value?.brand_id),
+);
+const category = computed(() =>
+	catalog.categories.find((c) => c.id === product.value?.category_id),
+);
 
-const productStock = computed(() => stock.inventory.filter(i => i.product_id === id))
-
+const productStock = computed(() =>
+	stock.inventory.filter((i) => i.product_id === id),
+);
 </script>
 
 <template>

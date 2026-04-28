@@ -1,24 +1,26 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStockStore } from '@/stores/useStockStore'
-import { useCatalogStore } from '@/stores/useCatalogStore'
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useCatalogStore } from "@/stores/useCatalogStore";
+import { useStockStore } from "@/stores/useStockStore";
 
-const router = useRouter()
-const stock = useStockStore()
-const catalog = useCatalogStore()
+const router = useRouter();
+const stock = useStockStore();
+const catalog = useCatalogStore();
 
 const getProductName = (id: string) => {
-  return catalog.products.find(p => p.id === id)?.name || 'Producto Desconocido'
-}
+	return (
+		catalog.products.find((p) => p.id === id)?.name || "Producto Desconocido"
+	);
+};
 
 onMounted(async () => {
-  if (catalog.products.length === 0) {
-    await catalog.fetchCatalog()
-  }
-  // En un caso real se fetchearía history, pero como movements no tiene fetch method aquí, podemos hacer uno simple.
-  // Suponiendo que hay lógica de movements en useStockStore. 
-})
+	if (catalog.products.length === 0) {
+		await catalog.fetchCatalog();
+	}
+	// En un caso real se fetchearía history, pero como movements no tiene fetch method aquí, podemos hacer uno simple.
+	// Suponiendo que hay lógica de movements en useStockStore.
+});
 // Ya que `useStockStore` puede no tener fetchMovements expuesto, usamos los helpers que existan o mostramos "Módulo de logs".
 </script>
 

@@ -1023,7 +1023,6 @@ select {
 	flex-shrink: 0;
 }
 
-
 /* ── Empty State ──────────────────────────────────── */
 .empty-state {
 	text-align: center;
@@ -1040,7 +1039,6 @@ select {
 .empty-state p {
 	font-size: var(--fs-sm);
 }
-
 
 /* ── Utility ──────────────────────────────────────── */
 .hidden {
@@ -1135,7 +1133,6 @@ select {
 .back-btn:active {
 	color: var(--accent);
 }
-
 
 /* ── Movements ───────────────────────────────────── */
 .movements-list {

@@ -1,42 +1,41 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useCatalogStore } from '@/stores/useCatalogStore'
-import { useStockStore } from '@/stores/useStockStore'
-import ProductItem from '@/components/ui/ProductItem.vue'
+import { computed, onMounted, ref } from "vue";
+import ProductItem from "@/components/ui/ProductItem.vue";
+import { useCatalogStore } from "@/stores/useCatalogStore";
+import { useStockStore } from "@/stores/useStockStore";
 
-const catalog = useCatalogStore()
-const stock = useStockStore()
+const catalog = useCatalogStore();
+const stock = useStockStore();
 
-const searchQuery = ref('')
-const selectedBrandId = ref<string | null>(null)
+const searchQuery = ref("");
+const selectedBrandId = ref<string | null>(null);
 
 // Datos enriquecidos (Unimos producto con su stock y nombre de marca)
 const enrichedProducts = computed(() => {
-  return catalog.products.map(p => {
-    const stockInfo = stock.inventory.find(i => i.product_id === p.id)
-    return {
-      ...p,
-      current_stock: stockInfo?.quantity ?? 0,
-      reorder_point: stockInfo?.reorder_point ?? 5
-    }
-  })
-})
+	return catalog.products.map((p) => {
+		const stockInfo = stock.inventory.find((i) => i.product_id === p.id);
+		return {
+			...p,
+			current_stock: stockInfo?.quantity ?? 0,
+			reorder_point: stockInfo?.reorder_point ?? 5,
+		};
+	});
+});
 
 const filteredProducts = computed(() => {
-  return enrichedProducts.value.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
-                         p.sku.toLowerCase().includes(searchQuery.value.toLowerCase())
-    const matchesBrand = !selectedBrandId.value || p.brand_id === selectedBrandId.value
-    return matchesSearch && matchesBrand
-  })
-})
+	return enrichedProducts.value.filter((p) => {
+		const matchesSearch =
+			p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+			p.sku.toLowerCase().includes(searchQuery.value.toLowerCase());
+		const matchesBrand =
+			!selectedBrandId.value || p.brand_id === selectedBrandId.value;
+		return matchesSearch && matchesBrand;
+	});
+});
 
 onMounted(async () => {
-  await Promise.all([
-    catalog.fetchCatalog(),
-    stock.fetchInventory()
-  ])
-})
+	await Promise.all([catalog.fetchCatalog(), stock.fetchInventory()]);
+});
 </script>
 
 <template>

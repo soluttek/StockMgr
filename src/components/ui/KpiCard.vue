@@ -1,14 +1,14 @@
 <script setup lang="ts">
 defineProps<{
-  title: string
-  value: string | number
-  icon?: string
-  trend?: {
-    value: number
-    positive: boolean
-  }
-  color?: string
-}>()
+	title: string;
+	value: string | number;
+	icon?: string;
+	trend?: {
+		value: number;
+		positive: boolean;
+	};
+	color?: string;
+}>();
 </script>
 
 <template>

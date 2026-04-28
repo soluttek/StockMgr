@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCatalogStore } from '@/stores/useCatalogStore'
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useCatalogStore } from "@/stores/useCatalogStore";
 
-const router = useRouter()
-const catalog = useCatalogStore()
+const router = useRouter();
+const catalog = useCatalogStore();
 
 onMounted(async () => {
-  if (catalog.brands.length === 0) {
-    await catalog.fetchCatalog()
-  }
-})
+	if (catalog.brands.length === 0) {
+		await catalog.fetchCatalog();
+	}
+});
 </script>
 
 <template>

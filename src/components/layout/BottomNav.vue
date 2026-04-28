@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/useAuthStore'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from "vue";
+import { useAuthStore } from "@/stores/useAuthStore";
 
-const auth = useAuthStore()
-const isOnline = ref(navigator.onLine)
+const auth = useAuthStore();
+const isOnline = ref(navigator.onLine);
 
 function updateOnlineStatus() {
-  isOnline.value = navigator.onLine
+	isOnline.value = navigator.onLine;
 }
 
 onMounted(() => {
-  window.addEventListener('online', updateOnlineStatus)
-  window.addEventListener('offline', updateOnlineStatus)
-})
+	window.addEventListener("online", updateOnlineStatus);
+	window.addEventListener("offline", updateOnlineStatus);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('online', updateOnlineStatus)
-  window.removeEventListener('offline', updateOnlineStatus)
-})
+	window.removeEventListener("online", updateOnlineStatus);
+	window.removeEventListener("offline", updateOnlineStatus);
+});
 </script>
 
 <template>

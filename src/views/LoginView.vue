@@ -1,104 +1,105 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'vue-router'
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "@/lib/supabase";
 
-const email = ref('')
-const password = ref('')
-const isLoading = ref(false)
-const errorMessage = ref('')
-const showPassword = ref(false)
-const passwordInputType = ref<'password' | 'text'>('password')
-const router = useRouter()
+const email = ref("");
+const password = ref("");
+const isLoading = ref(false);
+const errorMessage = ref("");
+const showPassword = ref(false);
+const passwordInputType = ref<"password" | "text">("password");
+const router = useRouter();
 
 // Custom Modal State
-const showModal = ref(false)
-const modalMessage = ref('')
+const showModal = ref(false);
+const modalMessage = ref("");
 
 // Progressive Rate Limiting Logic
-const attempts = ref(0)
-const cooldownSeconds = ref(0)
-const isPermanentlyLocked = ref(false)
-let cooldownTimer: number | null = null
+const attempts = ref(0);
+const cooldownSeconds = ref(0);
+const isPermanentlyLocked = ref(false);
+let cooldownTimer: number | null = null;
 
-// Escala Ajustada: 
+// Escala Ajustada:
 // Fallos 1-3: 0s
 // Fallo 4: 30s
 // Fallo 5: 60s (1m)
 // Fallo 6: 180s (3m) + Bloqueo
 function startCooldown() {
-  let waitTime = 0
-  if (attempts.value === 4) waitTime = 30
-  else if (attempts.value === 5) waitTime = 60
-  else if (attempts.value >= 6) waitTime = 180
+	let waitTime = 0;
+	if (attempts.value === 4) waitTime = 30;
+	else if (attempts.value === 5) waitTime = 60;
+	else if (attempts.value >= 6) waitTime = 180;
 
-  if (waitTime === 0) return
+	if (waitTime === 0) return;
 
-  cooldownSeconds.value = waitTime
-  
-  if (cooldownTimer) clearInterval(cooldownTimer)
-  
-  cooldownTimer = window.setInterval(() => {
-    cooldownSeconds.value--
-    if (cooldownSeconds.value <= 0) {
-      if (cooldownTimer) clearInterval(cooldownTimer)
-    }
-  }, 1000)
+	cooldownSeconds.value = waitTime;
+
+	if (cooldownTimer) clearInterval(cooldownTimer);
+
+	cooldownTimer = window.setInterval(() => {
+		cooldownSeconds.value--;
+		if (cooldownSeconds.value <= 0) {
+			if (cooldownTimer) clearInterval(cooldownTimer);
+		}
+	}, 1000);
 }
 
 function openModal(msg: string) {
-  modalMessage.value = msg
-  showModal.value = true
+	modalMessage.value = msg;
+	showModal.value = true;
 }
 
 function togglePasswordVisibility() {
-  passwordInputType.value = 'text'
-  showPassword.value = true
-  
-  setTimeout(() => {
-    passwordInputType.value = 'password'
-    showPassword.value = false
-  }, 5000)
+	passwordInputType.value = "text";
+	showPassword.value = true;
+
+	setTimeout(() => {
+		passwordInputType.value = "password";
+		showPassword.value = false;
+	}, 5000);
 }
 
 async function handleLogin() {
-  // Manual Validation
-  if (!email.value) {
-    openModal('Por favor, introduce tu email corporativo.')
-    return
-  }
-  if (!password.value) {
-    openModal('La contraseña es obligatoria para acceder.')
-    return
-  }
+	// Manual Validation
+	if (!email.value) {
+		openModal("Por favor, introduce tu email corporativo.");
+		return;
+	}
+	if (!password.value) {
+		openModal("La contraseña es obligatoria para acceder.");
+		return;
+	}
 
-  if (isPermanentlyLocked.value || cooldownSeconds.value > 0) return
+	if (isPermanentlyLocked.value || cooldownSeconds.value > 0) return;
 
-  isLoading.value = true
-  errorMessage.value = ''
-  
-  const { error } = await supabase.auth.signInWithPassword({
-    email: email.value,
-    password: password.value
-  })
+	isLoading.value = true;
+	errorMessage.value = "";
 
-  if (error) {
-    attempts.value++
-    
-    if (attempts.value >= 6) {
-      isPermanentlyLocked.value = true
-      errorMessage.value = 'Cuenta bloqueada por seguridad.'
-    } else {
-      errorMessage.value = error.message === 'Invalid login credentials' 
-        ? 'Credenciales incorrectas.' 
-        : error.message
-      startCooldown()
-    }
-  } else {
-    attempts.value = 0
-    router.push('/')
-  }
-  isLoading.value = false
+	const { error } = await supabase.auth.signInWithPassword({
+		email: email.value,
+		password: password.value,
+	});
+
+	if (error) {
+		attempts.value++;
+
+		if (attempts.value >= 6) {
+			isPermanentlyLocked.value = true;
+			errorMessage.value = "Cuenta bloqueada por seguridad.";
+		} else {
+			errorMessage.value =
+				error.message === "Invalid login credentials"
+					? "Credenciales incorrectas."
+					: error.message;
+			startCooldown();
+		}
+	} else {
+		attempts.value = 0;
+		router.push("/");
+	}
+	isLoading.value = false;
 }
 </script>
 

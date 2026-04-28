@@ -1,113 +1,116 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import type { Html5QrcodeScanner } from 'html5-qrcode'
-import { useCatalogStore } from '@/stores/useCatalogStore'
-import { useStockStore } from '@/stores/useStockStore'
-import { useAuthStore } from '@/stores/useAuthStore'
-import ProductItem from '@/components/ui/ProductItem.vue'
-import type { Product } from '@/types'
+import type { Html5QrcodeScanner } from "html5-qrcode";
+import { onMounted, onUnmounted, ref } from "vue";
+import ProductItem from "@/components/ui/ProductItem.vue";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useCatalogStore } from "@/stores/useCatalogStore";
+import { useStockStore } from "@/stores/useStockStore";
+import type { Product } from "@/types";
 
-const catalog = useCatalogStore()
-const stock = useStockStore()
+const catalog = useCatalogStore();
+const stock = useStockStore();
 
-const scanner = ref<Html5QrcodeScanner | null>(null)
-const scannedResult = ref<string | null>(null)
-const detectedProduct = ref<Product | null>(null)
-const isProcessing = ref(false)
+const scanner = ref<Html5QrcodeScanner | null>(null);
+const scannedResult = ref<string | null>(null);
+const detectedProduct = ref<Product | null>(null);
+const isProcessing = ref(false);
 
 const onScanSuccess = async (decodedText: string) => {
-  if (isProcessing.value) return
-  
-  isProcessing.value = true
-  scannedResult.value = decodedText
-  
-  // Buscar producto por SKU o GTIN/EAN
-  const product = catalog.products.find(p => p.sku === decodedText || p.gtin_ean === decodedText)
-  
-  if (product) {
-    detectedProduct.value = product
-    // Vibración suave si el dispositivo lo soporta
-    if (window.navigator.vibrate) window.navigator.vibrate(100)
-  } else {
-    detectedProduct.value = null
-  }
-  
-  isProcessing.value = false
-}
+	if (isProcessing.value) return;
+
+	isProcessing.value = true;
+	scannedResult.value = decodedText;
+
+	// Buscar producto por SKU o GTIN/EAN
+	const product = catalog.products.find(
+		(p) => p.sku === decodedText || p.gtin_ean === decodedText,
+	);
+
+	if (product) {
+		detectedProduct.value = product;
+		// Vibración suave si el dispositivo lo soporta
+		if (window.navigator.vibrate) window.navigator.vibrate(100);
+	} else {
+		detectedProduct.value = null;
+	}
+
+	isProcessing.value = false;
+};
 
 const onScanError = (err: any) => {
-  // Errores de escaneo comunes (ignoramos para no saturar)
-  // console.warn(`Scan error: ${err}`)
-}
+	// Errores de escaneo comunes (ignoramos para no saturar)
+	// console.warn(`Scan error: ${err}`)
+};
 
 const resetScanner = () => {
-  scannedResult.value = null
-  detectedProduct.value = null
-}
+	scannedResult.value = null;
+	detectedProduct.value = null;
+};
 
-const handleQuickAdjust = async (type: 'IN' | 'OUT') => {
-  if (!detectedProduct.value || isProcessing.value) return
-  
-  const auth = useAuthStore()
-  if (!auth.user) {
-    alert('Debes iniciar sesión para realizar ajustes')
-    return
-  }
+const handleQuickAdjust = async (type: "IN" | "OUT") => {
+	if (!detectedProduct.value || isProcessing.value) return;
 
-  isProcessing.value = true
-  const quantity = type === 'IN' ? 1 : -1
-  
-  try {
-    // Buscar warehouse_id: intentamos encontrar donde ya existe el producto, o usamos el primero del catálogo
-    const stockItem = stock.inventory.find(i => i.product_id === detectedProduct.value!.id)
-    const warehouseId = stockItem?.warehouse_id || catalog.warehouses[0]?.id
+	const auth = useAuthStore();
+	if (!auth.user) {
+		alert("Debes iniciar sesión para realizar ajustes");
+		return;
+	}
 
-    if (!warehouseId) {
-      throw new Error('No hay almacenes configurados')
-    }
+	isProcessing.value = true;
+	const quantity = type === "IN" ? 1 : -1;
 
-    await stock.registerMovement({
-      product_id: detectedProduct.value!.id,
-      quantity_change: quantity,
-      user_id: auth.user.id,
-      warehouse_id: warehouseId,
-      client_mutation_id: crypto.randomUUID(),
-      reason: `Ajuste rápido (${type}) desde Escáner`,
-      status: 'completed'
-    })
+	try {
+		// Buscar warehouse_id: intentamos encontrar donde ya existe el producto, o usamos el primero del catálogo
+		const stockItem = stock.inventory.find(
+			(i) => i.product_id === detectedProduct.value!.id,
+		);
+		const warehouseId = stockItem?.warehouse_id || catalog.warehouses[0]?.id;
 
-    if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100])
-    
-  } catch (err: any) {
-    console.error('Adjustment error:', err)
-    alert(`Error: ${err.message || 'No se pudo realizar el ajuste'}`)
-  } finally {
-    isProcessing.value = false
-  }
-}
+		if (!warehouseId) {
+			throw new Error("No hay almacenes configurados");
+		}
+
+		await stock.registerMovement({
+			product_id: detectedProduct.value!.id,
+			quantity_change: quantity,
+			user_id: auth.user.id,
+			warehouse_id: warehouseId,
+			client_mutation_id: crypto.randomUUID(),
+			reason: `Ajuste rápido (${type}) desde Escáner`,
+			status: "completed",
+		});
+
+		if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
+	} catch (err: any) {
+		console.error("Adjustment error:", err);
+		alert(`Error: ${err.message || "No se pudo realizar el ajuste"}`);
+	} finally {
+		isProcessing.value = false;
+	}
+};
 
 onMounted(async () => {
-  const { Html5QrcodeScanner } = await import('html5-qrcode')
-  
-  scanner.value = new Html5QrcodeScanner(
-    "reader",
-    { 
-      fps: 10, 
-      qrbox: { width: 250, height: 250 },
-      aspectRatio: 1.0
-    },
-    /* verbose= */ false
-  )
-  scanner.value.render(onScanSuccess, onScanError)
-})
+	const { Html5QrcodeScanner } = await import("html5-qrcode");
+
+	scanner.value = new Html5QrcodeScanner(
+		"reader",
+		{
+			fps: 10,
+			qrbox: { width: 250, height: 250 },
+			aspectRatio: 1.0,
+		},
+		/* verbose= */ false,
+	);
+	scanner.value.render(onScanSuccess, onScanError);
+});
 
 onUnmounted(() => {
-  if (scanner.value) {
-    scanner.value.clear().catch(error => {
-       console.error("Failed to clear html5QrcodeScanner. ", error);
-    });
-  }
-})
+	if (scanner.value) {
+		scanner.value.clear().catch((error) => {
+			console.error("Failed to clear html5QrcodeScanner. ", error);
+		});
+	}
+});
 </script>
 
 <template>

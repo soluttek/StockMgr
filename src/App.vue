@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useAuthStore } from '@/stores/useAuthStore'
-import BottomNav from '@/components/layout/BottomNav.vue'
+import { onMounted, onUnmounted, ref } from "vue";
+import BottomNav from "@/components/layout/BottomNav.vue";
+import { useAuthStore } from "@/stores/useAuthStore";
 
-const auth = useAuthStore()
-const isOnline = ref(navigator.onLine)
+const auth = useAuthStore();
+const isOnline = ref(navigator.onLine);
 
 const updateOnlineStatus = () => {
-  isOnline.value = navigator.onLine
-}
+	isOnline.value = navigator.onLine;
+};
 
 onMounted(async () => {
-  window.addEventListener('online', updateOnlineStatus)
-  window.addEventListener('offline', updateOnlineStatus)
-  // Inicializamos la sesión global
-  await auth.initialize()
-})
+	window.addEventListener("online", updateOnlineStatus);
+	window.addEventListener("offline", updateOnlineStatus);
+	// Inicializamos la sesión global
+	await auth.initialize();
+});
 
 onUnmounted(() => {
-  window.removeEventListener('online', updateOnlineStatus)
-  window.removeEventListener('offline', updateOnlineStatus)
-})
+	window.removeEventListener("online", updateOnlineStatus);
+	window.removeEventListener("offline", updateOnlineStatus);
+});
 </script>
 
 <template>

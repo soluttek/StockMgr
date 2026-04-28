@@ -8,7 +8,7 @@ describe("SKU Engine Integrity", () => {
 			brand: "APP",
 			state: "01",
 			condition: "NEW",
-			correlative: "00001"
+			correlative: "00001",
 		};
 
 		const sku = generateSku(parts);
@@ -27,7 +27,7 @@ describe("SKU Engine Integrity", () => {
 			brand: "SAM",
 			state: "01",
 			condition: "OEM",
-			correlative: "00023"
+			correlative: "00023",
 		});
 	});
 });

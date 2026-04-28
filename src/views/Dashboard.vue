@@ -1,29 +1,28 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { useCatalogStore } from '@/stores/useCatalogStore'
-import { useStockStore } from '@/stores/useStockStore'
-import { useAuthStore } from '@/stores/useAuthStore'
-import KpiCard from '@/components/ui/KpiCard.vue'
+import { computed, onMounted } from "vue";
+import KpiCard from "@/components/ui/KpiCard.vue";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useCatalogStore } from "@/stores/useCatalogStore";
+import { useStockStore } from "@/stores/useStockStore";
 
-const catalog = useCatalogStore()
-const stock = useStockStore()
-const auth = useAuthStore()
+const catalog = useCatalogStore();
+const stock = useStockStore();
+const auth = useAuthStore();
 
 onMounted(async () => {
-  await Promise.all([
-    catalog.fetchCatalog(),
-    stock.fetchInventory()
-  ])
-})
+	await Promise.all([catalog.fetchCatalog(), stock.fetchInventory()]);
+});
 
 const lowStockCount = computed(() => {
-  return stock.inventory.filter(item => item.quantity <= (item.reorder_point || 5)).length
-})
+	return stock.inventory.filter(
+		(item) => item.quantity <= (item.reorder_point || 5),
+	).length;
+});
 
 const totalStockValue = computed(() => {
-  // Placeholder: en una fase futura calcularemos el valor monetario si hay precios
-  return stock.inventory.reduce((acc, item) => acc + item.quantity, 0)
-})
+	// Placeholder: en una fase futura calcularemos el valor monetario si hay precios
+	return stock.inventory.reduce((acc, item) => acc + item.quantity, 0);
+});
 </script>
 
 <template>
