@@ -10,13 +10,12 @@ Hoy ha sido una jornada de consolidación técnica crítica. Se han finalizado l
 
 ## 🛠️ Hitos y Mejoras
 
-### 1. Refinamiento del Módulo de Soporte (`SupportView.vue`)
-*   **FAQ Minimalista:** Transformación de la sección de preguntas frecuentes de cuadros estáticos a un sistema de **acordeón interactivo** (Industrial Utilitarian).
-*   **Buscador Inteligente:**
-    *   Implementación de búsqueda **acent-insensitive** (normalización Unicode NFD) para mejorar la UX en terminales móviles de almacén.
-    *   Integración de botón de limpieza ("X") directamente dentro del campo de búsqueda.
-    *   Corrección de layout: El buscador ahora se mantiene alineado con el título sin saltos de línea.
-*   **Comportamiento UX:** Configuración de estado colapsado por defecto para una interfaz más limpia.
+### 1. Refinamiento del Módulo de Soporte (Hitos 6.1 - 6.5)
+*   **Hito 6.1 - FAQ Minimalista (Acordeón):** Rediseño completo de la sección de preguntas frecuentes. Se pasó de un formato de cuadros estáticos a un sistema de **acordeón interactivo** que ahorra espacio y mejora la legibilidad, permitiendo expandir solo la información necesaria.
+*   **Hito 6.2 - Botón de Limpieza "X" Integrado:** Mejora de la barra de búsqueda mediante la inclusión de un botón de limpieza rápida ("X") posicionado estratégicamente **dentro del input** a la derecha. Esto permite al usuario resetear su búsqueda con un solo toque, optimizando la velocidad operativa.
+*   **Hito 6.3 - Búsqueda Accent-Insensitive (Normalización):** Implementación de una lógica de búsqueda avanzada que ignora los acentos y diacríticos (`normalizeStr`). Esta mejora es vital para usuarios de almacén que suelen escribir rápido y sin tildes, garantizando que siempre encuentren la respuesta que buscan.
+*   **Hito 6.4 - Corrección de Layout y Alineación:** Ajuste fino del CSS para asegurar que la barra de búsqueda se mantenga alineada horizontalmente con el título "Preguntas Frecuentes", evitando saltos de línea indeseados y manteniendo la consistencia visual premium.
+*   **Hito 6.5 - Control de Estado del Acordeón:** Refinamiento de la lógica de expansión para asegurar que, al cargar la página o limpiar una búsqueda, todos los elementos aparezcan **colapsados por defecto**, respetando la preferencia del usuario por una interfaz limpia y minimalista.
 
 ### 2. Implementación de Calidad Automatizada (CI/CD)
 *   **GitHub Actions:** Configuración del pipeline `Continuous Integration` que ejecuta:
