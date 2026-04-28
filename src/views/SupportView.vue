@@ -11,8 +11,12 @@ const isSubmitting = ref(false)
 const isSent = ref(false)
 
 // FAQ Accordion State
-const activeFaqIndex = ref<number | null>(0)
+const activeFaqIndex = ref<number | null>(null)
 const searchQuery = ref('')
+
+const normalizeStr = (str: string) => {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
 
 const faqs = [
   {
@@ -35,10 +39,10 @@ const faqs = [
 
 const filteredFaqs = computed(() => {
   if (!searchQuery.value) return faqs
-  const query = searchQuery.value.toLowerCase()
+  const query = normalizeStr(searchQuery.value)
   return faqs.filter(f => 
-    f.question.toLowerCase().includes(query) || 
-    f.answer.toLowerCase().includes(query)
+    normalizeStr(f.question).includes(query) || 
+    normalizeStr(f.answer).includes(query)
   )
 })
 
@@ -49,13 +53,6 @@ const toggleFaq = (index: number) => {
 const clearSearch = () => {
   searchQuery.value = ''
 }
-
-// Watch search to auto-expand first item when cleared
-watch(searchQuery, (newVal) => {
-  if (!newVal) {
-    activeFaqIndex.value = 0
-  }
-})
 
 const isMessageEnabled = computed(() => {
   return subject.value === 'Problemas Técnicos.' || subject.value === 'Otros...'
@@ -419,7 +416,6 @@ textarea:disabled {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--sp-4);
-  flex-wrap: wrap;
   gap: var(--sp-3);
 }
 
@@ -427,9 +423,11 @@ textarea:disabled {
   font-size: var(--fs-lg);
   font-weight: 600;
   margin: 0;
+  white-space: nowrap;
 }
 
 .search-mini {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--sp-2);
@@ -437,7 +435,8 @@ textarea:disabled {
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 6px 12px;
   border-radius: var(--radius-full);
-  min-width: 180px;
+  width: 100%;
+  max-width: 250px;
 }
 
 .search-mini input {
@@ -447,7 +446,7 @@ textarea:disabled {
   color: var(--text-primary);
   outline: none;
   width: 100%;
-  padding-right: 24px;
+  padding-right: 28px;
 }
 
 .search-icon {
