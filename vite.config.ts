@@ -1,9 +1,14 @@
+/// <reference types="vitest" />
 import path from "node:path";
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+	test: {
+		include: ["src/tests/unit/**/*.test.ts"],
+		environment: "jsdom",
+	},
 	plugins: [
 		vue(),
 		VitePWA({
