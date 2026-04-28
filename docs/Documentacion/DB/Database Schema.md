@@ -1,4 +1,8 @@
-# **TECHNICAL BLUEPRINT: DATABASE ARCHITECTURE**
+# **TECHNICAL ANALISYS: INITIAL PROPOSAL**
+
+> [!WARNING]
+> **DOCUMENTO DE ANÁLISIS INICIAL.**
+> Este archivo fue la propuesta estratégica. Para ver la **Arquitectura Real Implementada**, consulta: [ESQUEMA_DB_REAL_V2.md](./ESQUEMA_DB_REAL_V2.md).
 
 **Módulo:** E-Commerce Componentes & Refacciones Móviles (Stock \+ CRM)
 

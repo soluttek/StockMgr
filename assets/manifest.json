@@ -1,24 +1,21 @@
 {
-    "name": "Stock Manager",
-    "short_name": "StockMgr",
-    "description": "Gestión de inventario de piezas de celulares con escaneo rápido",
-    "start_url": "/",
-    "display": "standalone",
-    "orientation": "portrait",
-    "theme_color": "#0f172a",
-    "background_color": "#0f172a",
-    "icons": [
-        {
-            "src": "/icons/icon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml",
-            "purpose": "any maskable"
-        }
-    ],
-    "categories": [
-        "business",
-        "productivity"
-    ],
-    "lang": "es",
-    "dir": "ltr"
+	"name": "Stock Manager",
+	"short_name": "StockMgr",
+	"description": "Gestión de inventario de piezas de celulares con escaneo rápido",
+	"start_url": "/",
+	"display": "standalone",
+	"orientation": "portrait",
+	"theme_color": "#0f172a",
+	"background_color": "#0f172a",
+	"icons": [
+		{
+			"src": "/icons/icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	],
+	"categories": ["business", "productivity"],
+	"lang": "es",
+	"dir": "ltr"
 }
