@@ -1,79 +1,89 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
-const name = ref('')
-const email = ref('')
-const subject = ref('')
-const message = ref('')
-const isSubmitting = ref(false)
-const isSent = ref(false)
+const router = useRouter();
+const name = ref("");
+const email = ref("");
+const subject = ref("");
+const message = ref("");
+const isSubmitting = ref(false);
+const isSent = ref(false);
 
 // FAQ Accordion State
-const activeFaqIndex = ref<number | null>(null)
-const searchQuery = ref('')
+const activeFaqIndex = ref<number | null>(null);
+const searchQuery = ref("");
 
 const normalizeStr = (str: string) => {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-}
+	return str
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase();
+};
 
 const faqs = [
-  {
-    question: '¿Qué hago si no hay internet?',
-    answer: 'Sigue escaneando normalmente. StockMgr guardará los movimientos de forma local (Offline) y se sincronizará automáticamente en cuanto recupere la conexión.'
-  },
-  {
-    question: 'La cámara se ve negra o no enfoca',
-    answer: 'Asegúrate de haber otorgado permisos de cámara en tu navegador. Si el problema persiste, limpia el lente trasero del dispositivo o reinicia la aplicación.'
-  },
-  {
-    question: '¿Cómo recupero mi contraseña?',
-    answer: 'Debes enviar una "Solicitud de Desbloqueo" a través del formulario de esta página. El administrador revisará tu identidad y reseteará tus credenciales.'
-  },
-  {
-    question: 'Error: "Movimiento ya procesado"',
-    answer: 'Este aviso aparece cuando intentas sincronizar un movimiento que el servidor ya recibió. No requiere acción adicional, el sistema evita duplicados automáticamente.'
-  }
-]
+	{
+		question: "¿Qué hago si no hay internet?",
+		answer:
+			"Sigue escaneando normalmente. StockMgr guardará los movimientos de forma local (Offline) y se sincronizará automáticamente en cuanto recupere la conexión.",
+	},
+	{
+		question: "La cámara se ve negra o no enfoca",
+		answer:
+			"Asegúrate de haber otorgado permisos de cámara en tu navegador. Si el problema persiste, limpia el lente trasero del dispositivo o reinicia la aplicación.",
+	},
+	{
+		question: "¿Cómo recupero mi contraseña?",
+		answer:
+			'Debes enviar una "Solicitud de Desbloqueo" a través del formulario de esta página. El administrador revisará tu identidad y reseteará tus credenciales.',
+	},
+	{
+		question: 'Error: "Movimiento ya procesado"',
+		answer:
+			"Este aviso aparece cuando intentas sincronizar un movimiento que el servidor ya recibió. No requiere acción adicional, el sistema evita duplicados automáticamente.",
+	},
+];
 
 const filteredFaqs = computed(() => {
-  if (!searchQuery.value) return faqs
-  const query = normalizeStr(searchQuery.value)
-  return faqs.filter(f => 
-    normalizeStr(f.question).includes(query) || 
-    normalizeStr(f.answer).includes(query)
-  )
-})
+	if (!searchQuery.value) return faqs;
+	const query = normalizeStr(searchQuery.value);
+	return faqs.filter(
+		(f) =>
+			normalizeStr(f.question).includes(query) ||
+			normalizeStr(f.answer).includes(query),
+	);
+});
 
 const toggleFaq = (index: number) => {
-  activeFaqIndex.value = activeFaqIndex.value === index ? null : index
-}
+	activeFaqIndex.value = activeFaqIndex.value === index ? null : index;
+};
 
 const clearSearch = () => {
-  searchQuery.value = ''
-}
+	searchQuery.value = "";
+};
 
 const isMessageEnabled = computed(() => {
-  return subject.value === 'Problemas Técnicos.' || subject.value === 'Otros...'
-})
+	return (
+		subject.value === "Problemas Técnicos." || subject.value === "Otros..."
+	);
+});
 
 async function handleSubmit() {
-  if (!subject.value) return
-  isSubmitting.value = true
-  
-  // Simulated API Call
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
-  isSubmitting.value = false
-  isSent.value = true
-  setTimeout(() => {
-    router.push('/login')
-  }, 4000)
+	if (!subject.value) return;
+	isSubmitting.value = true;
+
+	// Simulated API Call
+	await new Promise((resolve) => setTimeout(resolve, 1500));
+
+	isSubmitting.value = false;
+	isSent.value = true;
+	setTimeout(() => {
+		router.push("/login");
+	}, 4000);
 }
 
 function handleBack() {
-  router.push('/login')
+	router.push("/login");
 }
 </script>
 
